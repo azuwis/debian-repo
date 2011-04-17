@@ -1,0 +1,27 @@
+# this is your configuration file for pbuilder.
+# the file in /usr/share/pbuilder/pbuilderrc is the default template.
+# /etc/pbuilderrc is the one meant for overwritting defaults in
+# the default template
+#
+# read pbuilderrc.5 document for notes on specific options.
+MIRRORSITE=http://mirrors.163.com/debian
+COMPONENTS="main contrib non-free"
+
+# for building on tmpfs, see http://www.netfort.gr.jp/~dancer/software/pbuilder-doc/pbuilder-doc.html#tmpfsforpbuilder
+# append `tmpfs /var/cache/pbuilder/build tmpfs defaults 0 0' to /etc/fstab
+APTCACHEHARDLINK="no"
+
+# run hook A10append-distname-to-debian-version
+HOOKDIR="/etc/pbuilder/hooks"
+
+# for multiple distributions and architectures
+DISTRIBUTION="squeeze"
+ARCHITECTURE="amd64"
+if [ -n "${DIST}" ]; then
+	DISTRIBUTION="${DIST}"
+fi
+if [ -n "${ARCH}" ]; then
+	ARCHITECTURE="${ARCH}"
+fi
+BASETGZ="/var/cache/pbuilder/base-${DISTRIBUTION}-${ARCHITECTURE}.tgz"
+BUILDRESULT="/var/cache/pbuilder/result/${DISTRIBUTION}/"

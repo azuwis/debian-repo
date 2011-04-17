@@ -1,0 +1,34 @@
+* Install these deb packages:
+
+	pbuilder reprepro devscripts debhelper fakeroot
+
+* Have a look at these files, edit them accordingly:
+
+	/etc/pbuilderrc
+
+* Edit ./pbuilder.sh, change DISTS and ARCHS to what you want to build against. Initialize chroot environment:
+
+	$ ./pbuilder.sh create
+
+* Get debian source package and unpack:
+
+	$ apt-get source package_name
+or
+
+	$ dget uri://to/*.dsc
+	$ dpkg-souce -x *.dsc
+
+Building debs from a unpacked debian source:
+
+	$ cd package_source_dir
+	$ /path/to/pbuilder.sh build
+
+If you use git-buildpackage, run:
+
+	$ /path/to/pbuilder.sh gbp
+
+Build results can be found at BUILDRESULT, see /etc/pbuilderrc
+
+* Update chroot before building:
+
+	$ ./pbuilder.sh update

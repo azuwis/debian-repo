@@ -1,0 +1,5 @@
+#!/bin/bash
+apt-get install -y "${APTGETOPT[@]}" lsb-release devscripts
+dist=$(lsb_release --short --codename)
+cd /tmp/buildd/*/debian/..
+debchange --maintmaint --distribution $dist --local $dist "build against $dist"
