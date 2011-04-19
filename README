@@ -32,3 +32,17 @@ Build results can be found at BUILDRESULT, see /etc/pbuilderrc
 * Update chroot before building:
 
 	$ ./pbuilder.sh update
+
+* Workflow using git-buildpackage
+
+	$ git-import-dsc [--download [http://*.dsc|package] | *.dsc ]
+	$ gbp-pq import
+	... apply patch
+	$ git add && git commit -m 'patch name'
+	$ git checkout master
+	$ gbp-pq export
+	$ git add && git commit -m 'debian changelog'
+	$ git dch -R
+	$ git add debian/changelog && git commit --amend
+	$ git-buildpackage --git-ignore-new --git-builder='pdebuild' --git-cleaner="/bin/true"
+	$ git-buildpackage --git-ignore-new --git-tag-only
