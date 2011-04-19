@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 if [ x"$DISTS" = x ]; then
-	DISTS="lenny squeeze"
+	DISTS="squeeze lenny"
 fi
 if [ x"$ARCHS" = x ]; then
 	ARCHS="amd64 i386"
@@ -31,6 +31,7 @@ case "$1" in
 				fi
 				inc_orig=""
 				build_bin_only="-- --binary-arch"
+				reprepro -b /srv/debian-repo/reprepro processincoming default
 			done
 		done
 		;;
