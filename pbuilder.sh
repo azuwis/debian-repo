@@ -17,15 +17,15 @@ build_all()
 		do
 			echo "+++ building for $i $j, see ../*.build for log +++"
 			if [ x"$action" = x"gbp" ]; then
-				DIST=$i ARCH=$j git-buildpackage --git-ignore-new --git-builder="pdebuild $inc_orig $build_bin_only" --git-cleaner="/bin/true" 1>/dev/null
+				DIST=$i ARCH=$j git-buildpackage --git-ignore-new --git-builder="pdebuild $inc_orig $build_bin_only" --git-cleaner="/bin/true" >&/dev/null
 			else
-				DIST=$i ARCH=$j pdebuild $inc_orig $build_bin_only 1>/dev/null
+				DIST=$i ARCH=$j pdebuild $inc_orig $build_bin_only >&/dev/null
 			fi
 			echo "+++ done building for $i $j +++"
 			inc_orig=""
 			build_bin_only="-- --binary-arch"
 			echo "installing built results"
-			reprepro -v -b /srv/debian-repo/reprepro processincoming default
+			reprepro -b /srv/debian-repo/reprepro processincoming default
 		done
 	done
 }

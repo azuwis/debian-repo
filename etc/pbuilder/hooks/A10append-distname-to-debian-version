@@ -6,7 +6,7 @@ case "$codename" in
 		dist="stable"
 		;;
 	lenny)
-		dist="old-stable"
+		dist="oldstable"
 		;;
 	*)
 		dist="unstable"
