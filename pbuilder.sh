@@ -18,20 +18,21 @@ case "$1" in
 		done
 		;;
 	build | gbp)
+		inc_orig="--debbuildopts -sa"
 		for i in $DISTS
 		do
 			build_bin_only=""
 			for j in $ARCHS
 			do
 				if [ x"$1" = x"gbp" ]; then
-					DIST=$i ARCH=$j git-buildpackage --git-ignore-new --git-builder="pdebuild $build_bin_only" --git-cleaner="/bin/true"
+					DIST=$i ARCH=$j git-buildpackage --git-ignore-new --git-builder="pdebuild $inc_orig $build_bin_only" --git-cleaner="/bin/true"
 				else
-					DIST=$i ARCH=$j pdebuild $build_bin_only
+					DIST=$i ARCH=$j pdebuild $inc_orig $build_bin_only
 				fi
+				inc_orig=""
 				build_bin_only="-- --binary-arch"
 			done
 		done
-		reprepro -b /srv/debian-repo/reprepro processincoming default
 		;;
 	*)
 		echo "Usage: $0 {create|update|build|gbp}"
