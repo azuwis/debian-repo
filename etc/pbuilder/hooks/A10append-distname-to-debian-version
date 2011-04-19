@@ -2,4 +2,5 @@
 apt-get install -y "${APTGETOPT[@]}" lsb-release devscripts
 dist=$(lsb_release --short --codename)
 cd /tmp/buildd/*/debian/..
-debchange --maintmaint --distribution $dist --local $dist "build against $dist"
+deb_version=$(dpkg-parsechangelog | awk '/^Version:/ {print $2}')
+debchange --maintmaint --distribution "${dist}" --newversion "${deb_version}${dist}" "build against ${dist}"

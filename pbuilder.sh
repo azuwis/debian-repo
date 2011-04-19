@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 if [ x"$DISTS" = x ]; then
-	DISTS="squeeze lenny"
+	DISTS="lenny squeeze"
 fi
 if [ x"$ARCHS" = x ]; then
 	ARCHS="amd64 i386"
@@ -18,17 +18,19 @@ case "$1" in
 		done
 		;;
 	build | gbp)
+		inc_orig="--debbuildopts -sa"
 		for i in $DISTS
 		do
-			pbuilder_opt=""
+			build_bin_only=""
 			for j in $ARCHS
 			do
 				if [ x"$1" = x"gbp" ]; then
-					DIST=$i ARCH=$j git-buildpackage --git-ignore-new --git-builder="pdebuild $pbuilder_opt" --git-cleaner="/bin/true"
+					DIST=$i ARCH=$j git-buildpackage --git-ignore-new --git-builder="pdebuild $inc_orig $build_bin_only" --git-cleaner="/bin/true"
 				else
-					DIST=$i ARCH=$j pdebuild $pbuilder_opt
+					DIST=$i ARCH=$j pdebuild $inc_orig $build_bin_only
 				fi
-				pbuilder_opt="-- --binary-arch"
+				inc_orig=""
+				build_bin_only="-- --binary-arch"
 			done
 		done
 		;;

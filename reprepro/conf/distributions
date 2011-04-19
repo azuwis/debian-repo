@@ -1,0 +1,15 @@
+Codename: squeeze
+Suite: stable
+Components: main contrib non-free
+Architectures: i386 amd64 source
+Origin: Netease
+Version: 1.0
+Description: Custom debian squeeze repo for NetEase
+
+Codename: lenny
+Suite: old-stable
+Components: main contrib non-free
+Architectures: i386 amd64 source
+Origin: Netease
+Version: 1.0
+Description: Custom debian lenny repo for NetEase

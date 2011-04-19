@@ -24,4 +24,7 @@ if [ -n "${ARCH}" ]; then
 	ARCHITECTURE="${ARCH}"
 fi
 BASETGZ="/var/cache/pbuilder/base-${DISTRIBUTION}-${ARCHITECTURE}.tgz"
-BUILDRESULT="/var/cache/pbuilder/result/${DISTRIBUTION}/"
+#BUILDRESULT="/var/cache/pbuilder/result/${DISTRIBUTION}/"
+
+# include .orig.tar.gz in .changes file
+#DEBBUILDOPTS="-sa"
