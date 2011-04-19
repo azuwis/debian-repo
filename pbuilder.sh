@@ -7,36 +7,58 @@ if [ x"$ARCHS" = x ]; then
 	ARCHS="amd64 i386"
 fi
 
-case "$1" in
+build_all()
+{
+	inc_orig="--debbuildopts -sa"
+	for i in $DISTS
+	do
+		build_bin_only=""
+		for j in $ARCHS
+		do
+			echo "+++ building for $i $j, see ../*.build for log +++"
+			if [ x"$action" = x"gbp" ]; then
+				DIST=$i ARCH=$j git-buildpackage --git-ignore-new --git-builder="pdebuild $inc_orig $build_bin_only" --git-cleaner="/bin/true" 1>/dev/null
+			else
+				DIST=$i ARCH=$j pdebuild $inc_orig $build_bin_only 1>/dev/null
+			fi
+			echo "+++ done building for $i $j +++"
+			inc_orig=""
+			build_bin_only="-- --binary-arch"
+			echo "installing built results"
+			reprepro -v -b /srv/debian-repo/reprepro processincoming default
+		done
+	done
+}
+
+action=$1
+
+case "$action" in
 	create | update)
 		for i in $DISTS
 		do
 			for j in $ARCHS
 			do
-				sudo DIST=$i ARCH=$j pbuilder $1
+				sudo DIST=$i ARCH=$j pbuilder $action
 			done
 		done
 		;;
 	build | gbp)
-		inc_orig="--debbuildopts -sa"
-		for i in $DISTS
-		do
-			build_bin_only=""
-			for j in $ARCHS
+		shift
+		if [ $# -gt 0 ]; then
+			for dir in $@
 			do
-				if [ x"$1" = x"gbp" ]; then
-					DIST=$i ARCH=$j git-buildpackage --git-ignore-new --git-builder="pdebuild $inc_orig $build_bin_only" --git-cleaner="/bin/true"
-				else
-					DIST=$i ARCH=$j pdebuild $inc_orig $build_bin_only
+				if [ -d "$dir" ]; then
+					pushd "$dir"
+					build_all
+					popd
 				fi
-				inc_orig=""
-				build_bin_only="-- --binary-arch"
-				reprepro -b /srv/debian-repo/reprepro processincoming default
 			done
-		done
+		else
+			build_all
+		fi
 		;;
 	*)
-		echo "Usage: $0 {create|update|build|gbp}"
+		echo "Usage: $0 {create|update|build|gbp[src_dir ...]}"
 		exit 1
 		;;
 esac

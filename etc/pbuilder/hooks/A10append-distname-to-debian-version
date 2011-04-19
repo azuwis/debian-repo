@@ -1,6 +1,17 @@
 #!/bin/bash
 apt-get install -y "${APTGETOPT[@]}" lsb-release devscripts
-dist=$(lsb_release --short --codename)
+codename=$(lsb_release --short --codename)
+case "$codename" in
+	squeeze)
+		dist="stable"
+		;;
+	lenny)
+		dist="old-stable"
+		;;
+	*)
+		dist="unstable"
+		;;
+esac
 cd /tmp/buildd/*/debian/..
 deb_version=$(dpkg-parsechangelog | awk '/^Version:/ {print $2}')
-debchange --maintmaint --distribution "${dist}" --newversion "${deb_version}${dist}" "build against ${dist}"
+debchange --maintmaint --distribution "${dist}" --newversion "${deb_version}${codename}" "build against ${codename}"
