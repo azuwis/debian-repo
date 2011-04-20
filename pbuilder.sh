@@ -12,16 +12,17 @@ build_all()
 	inc_orig="--debbuildopts -sa"
 	for i in $DISTS
 	do
+		echo "start building, see ../*.build for log +++"
 		build_bin_only=""
 		for j in $ARCHS
 		do
-			echo "+++ building for $i $j, see ../*.build for log +++"
+			echo "+++ building for $i $j +++"
 			if [ x"$action" = x"gbp" ]; then
 				DIST=$i ARCH=$j git-buildpackage --git-ignore-new --git-builder="pdebuild $inc_orig $build_bin_only" --git-cleaner="/bin/true" >&/dev/null
 			else
 				DIST=$i ARCH=$j pdebuild $inc_orig $build_bin_only >&/dev/null
 			fi
-			echo "+++ done building for $i $j +++"
+			echo "done"
 			inc_orig=""
 			build_bin_only="-- --binary-arch"
 			echo "installing built results"
