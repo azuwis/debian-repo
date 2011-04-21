@@ -27,9 +27,13 @@ If you use git-buildpackage, run:
 
 	$ /path/to/pbuilder.sh gbp
 
+You can also use this to build multiple sources:
+
+	$ /path/to/pbuilder.sh [build|gbp] /path/to/source1 /path/to/source2 ...
+
 Build results can be found at BUILDRESULT, see /etc/pbuilderrc
 
-* Update chroot before building:
+* Update should be applied periodically using:
 
 	$ ./pbuilder.sh update
 
