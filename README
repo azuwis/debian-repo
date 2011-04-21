@@ -1,6 +1,6 @@
 * Install these deb packages:
 
-	pbuilder reprepro devscripts debhelper fakeroot
+	pbuilder debarchiver devscripts debhelper fakeroot
 
 * Have a look at these files, edit them accordingly:
 
