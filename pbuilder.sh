@@ -10,13 +10,13 @@ fi
 build_all()
 {
 	inc_orig="--debbuildopts -sa"
+	echo "+++ building for $i $j +++"
 	for i in $DISTS
 	do
 		echo "start building, see ../*.build for log +++"
 		build_bin_only=""
 		for j in $ARCHS
 		do
-			echo "+++ building for $i $j +++"
 			if [ x"$action" = x"gbp" ]; then
 				DIST=$i ARCH=$j git-buildpackage --git-ignore-new --git-builder="pdebuild $inc_orig $build_bin_only" --git-cleaner="/bin/true" >&/dev/null
 			else
@@ -25,10 +25,15 @@ build_all()
 			echo "done"
 			inc_orig=""
 			build_bin_only="-- --binary-arch"
-			echo "installing built results"
-			reprepro -b /srv/debian-repo/reprepro processincoming default
 		done
 	done
+	update_repo
+}
+
+update_repo()
+{
+	echo "installing built results"
+	debarchiver -so
 }
 
 action=$1
@@ -58,8 +63,11 @@ case "$action" in
 			build_all
 		fi
 		;;
+	update_repo)
+		update_repo
+		;;
 	*)
-		echo "Usage: $0 {create|update|build|gbp[src_dir ...]}"
+		echo "Usage: $0 {create|update|update_repo|build|gbp[src_dir ...]}"
 		exit 1
 		;;
 esac
