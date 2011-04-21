@@ -5,6 +5,7 @@ Architectures: i386 amd64 source
 Origin: Netease
 Version: 1.0
 Description: Custom debian squeeze repo for NetEase
+Log: squeeze.log
 
 Codename: lenny
 Suite: old-stable
@@ -13,3 +14,4 @@ Architectures: i386 amd64 source
 Origin: Netease
 Version: 1.0
 Description: Custom debian lenny repo for NetEase
+Log: lenny.log
