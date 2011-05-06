@@ -45,8 +45,12 @@ Build results can be found at BUILDRESULT, see /etc/pbuilderrc
 	$ git add && git commit -m 'patch name'
 	$ git checkout master
 	$ gbp-pq export
-	$ git add && git commit -m 'debian changelog'
+	$ git add debian/patches/${new_patch}
+	$ git checkout -- . && git clean -df
+	$ echo ${new_patch} >> debian/patches/series
+	$ git add debian/patches/series && git commit -m "${patch_log}"
 	$ git dch -R
 	$ git add debian/changelog && git commit --amend
 	$ git-buildpackage --git-ignore-new --git-builder='pdebuild' --git-cleaner="/bin/true"
 	$ git-buildpackage --git-ignore-new --git-tag-only
+	$ git tag patch-queue/${current_tag} patch-queue/master

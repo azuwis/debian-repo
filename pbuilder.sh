@@ -10,10 +10,10 @@ fi
 build_all()
 {
 	inc_orig="--debbuildopts -sa"
-	echo "+++ building for $i $j +++"
+	echo "start building, see ../*.build for log +++"
 	for i in $DISTS
 	do
-		echo "start building, see ../*.build for log +++"
+		echo "+++ building for $i $j +++"
 		build_bin_only=""
 		for j in $ARCHS
 		do
