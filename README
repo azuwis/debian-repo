@@ -53,4 +53,4 @@ Build results can be found at BUILDRESULT, see /etc/pbuilderrc
 	$ git add debian/changelog && git commit --amend
 	$ git-buildpackage --git-ignore-new --git-builder='pdebuild' --git-cleaner="/bin/true"
 	$ git-buildpackage --git-ignore-new --git-tag-only
-	$ git tag patch-queue/${current_tag} patch-queue/master
+	$ git [branch|tag] patch-queue/${current_tag} patch-queue/master

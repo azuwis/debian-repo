@@ -13,10 +13,10 @@ build_all()
 	echo "start building, see ../*.build for log +++"
 	for i in $DISTS
 	do
-		echo "+++ building for $i $j +++"
 		build_bin_only=""
 		for j in $ARCHS
 		do
+			echo "+++ building for $i $j +++"
 			if [ x"$action" = x"gbp" ]; then
 				DIST=$i ARCH=$j git-buildpackage --git-ignore-new --git-builder="pdebuild $inc_orig $build_bin_only" --git-cleaner="/bin/true" >&/dev/null
 			else
@@ -28,6 +28,7 @@ build_all()
 		done
 	done
 	update_repo
+	git-buildpackage --git-ignore-new --git-tag-only
 }
 
 update_repo()
