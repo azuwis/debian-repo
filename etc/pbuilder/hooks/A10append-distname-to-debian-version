@@ -13,5 +13,5 @@ case "$codename" in
 		;;
 esac
 cd /tmp/buildd/*/debian/..
-deb_version=$(dpkg-parsechangelog | awk '/^Version:/ {print $2}')
-debchange --maintmaint --distribution "${dist}" --newversion "${deb_version}${codename}" "build against ${codename}"
+debchange --maintmaint --distribution "${dist}" "build against ${codename}"
+sed -i '1s/)/'${codename}')/' debian/changelog
