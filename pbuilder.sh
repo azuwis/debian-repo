@@ -10,7 +10,7 @@ fi
 build_all()
 {
 	inc_orig="--debbuildopts -sa"
-	echo "start building, see ../*.build for log +++"
+	echo "+++ start building, see ../*.build for log +++"
 	for i in $DISTS
 	do
 		build_bin_only=""
@@ -18,7 +18,7 @@ build_all()
 		do
 			echo "+++ building for $i $j +++"
 			if [ x"$action" = x"gbp" ]; then
-				DIST=$i ARCH=$j git-buildpackage --git-ignore-new --git-builder="pdebuild $inc_orig $build_bin_only" --git-cleaner="/bin/true" >&/dev/null
+				DIST=$i ARCH=$j git-buildpackage --git-ignore-new --git-builder="pdebuild $inc_orig $build_bin_only" --git-cleaner='git reset --hard HEAD && git clean -df' >&/dev/null
 			else
 				DIST=$i ARCH=$j pdebuild $inc_orig $build_bin_only >&/dev/null
 			fi
@@ -29,6 +29,11 @@ build_all()
 	done
 	update_repo
 	git-buildpackage --git-ignore-new --git-tag-only
+}
+
+last_log()
+{
+	pager `ls -t ../*.build | head -n1`
 }
 
 update_repo()
@@ -67,8 +72,11 @@ case "$action" in
 	update_repo)
 		update_repo
 		;;
+	log)
+		last_log
+		;;
 	*)
-		echo "Usage: $0 {create|update|update_repo|build|gbp[src_dir ...]}"
+		echo "Usage: $0 {create|update|update_repo|build|gbp[src_dir ...]|log}"
 		exit 1
 		;;
 esac
