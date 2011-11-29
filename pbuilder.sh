@@ -31,7 +31,7 @@ build_all()
 	git-buildpackage --git-ignore-new --git-tag-only
 }
 
-last_log()
+log()
 {
 	pager `ls -t ../*.build | head -n1`
 }
@@ -41,7 +41,7 @@ commit()
 	git add debian/changelog && git commit -m "debian/changelog: $(dpkg-parsechangelog | awk '/^Version: / {print $2}')"
 }
 
-update_repo()
+repo()
 {
 	echo "installing built results"
 	debarchiver -so
@@ -74,14 +74,12 @@ case "$action" in
 			build_all
 		fi
 		;;
-	update_repo)
-		update_repo
-		;;
-	log)
-		last_log
-		;;
 	*)
-		echo "Usage: $0 {create|update|update_repo|build|gbp[src_dir ...]|log|commit}"
-		exit 1
+		if type $action | grep -q function; then
+			$action
+		else
+			echo "Usage: $0 {create|update|update_repo|build|gbp[src_dir ...]|log|commit}"
+			exit 1
+		fi
 		;;
 esac
