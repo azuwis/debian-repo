@@ -33,7 +33,11 @@ build_all()
 
 log()
 {
-	pager `ls -t ../*.build | head -n1`
+	pattern="*.build"
+	if [ -n $1 ]; then
+		pattern="*${1}*.build"
+	fi
+	pager `ls -t ../$pattern | head -n1`
 }
 
 commit()
@@ -43,8 +47,13 @@ commit()
 
 repo()
 {
-	echo "installing built results"
-	debarchiver -so
+	if [ x"$1" = x"all" ]; then
+		echo "updating all debs"
+		debarchiver -so --scanall
+	else
+		echo "installing built results"
+		debarchiver -so
+	fi
 }
 
 action=$1
@@ -76,9 +85,16 @@ case "$action" in
 		;;
 	*)
 		if type $action | grep -q function; then
-			$action
+			shift
+			$action "$@"
 		else
-			echo "Usage: $0 {create|update|update_repo|build|gbp[src_dir ...]|log|commit}"
+			echo "Usage: $0 subcommand"
+			echo "    create"
+			echo "    update"
+			echo "    build|gbp [src_dir ...]"
+			echo "    repo [all]"
+			echo "    log [pattern]"
+			echo "    commit"
 			exit 1
 		fi
 		;;
