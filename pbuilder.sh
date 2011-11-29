@@ -36,6 +36,11 @@ last_log()
 	pager `ls -t ../*.build | head -n1`
 }
 
+commit()
+{
+	git add debian/changelog && git commit -m "debian/changelog: $(dpkg-parsechangelog | awk '/^Version: / {print $2}')"
+}
+
 update_repo()
 {
 	echo "installing built results"
@@ -76,7 +81,7 @@ case "$action" in
 		last_log
 		;;
 	*)
-		echo "Usage: $0 {create|update|update_repo|build|gbp[src_dir ...]|log}"
+		echo "Usage: $0 {create|update|update_repo|build|gbp[src_dir ...]|log|commit}"
 		exit 1
 		;;
 esac
