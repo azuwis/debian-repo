@@ -6,6 +6,7 @@ Origin: Netease
 Label: Netease
 Version: 1.0
 Description: Custom debian squeeze repo for NetEase
+Tracking: all includechanges
 SignWith: yes
 Log: squeeze.log
 
@@ -17,5 +18,6 @@ Origin: Netease
 Label: Netease
 Version: 1.0
 Description: Custom debian lenny repo for NetEase
+Tracking: all includechanges
 SignWith: yes
 Log: lenny.log
