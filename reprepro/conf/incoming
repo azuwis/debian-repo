@@ -1,0 +1,4 @@
+Name: default
+IncomingDir: /var/cache/pbuilder/result
+TempDir: /tmp
+Allow: stable>squeeze oldstable>lenny

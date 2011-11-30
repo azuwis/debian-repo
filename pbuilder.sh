@@ -1,4 +1,8 @@
 #!/bin/bash
+
+export REPREPRO_BASE_DIR=/srv/debian-repo/reprepro
+repo=reprepro
+
 set -e
 if [ x"$DISTS" = x ]; then
 	DISTS="squeeze lenny"
@@ -27,7 +31,7 @@ build_all()
 			build_bin_only="-- --binary-arch"
 		done
 	done
-	update_repo
+	repo
 	git-buildpackage --git-ignore-new --git-tag-only
 }
 
@@ -47,6 +51,11 @@ commit()
 
 repo()
 {
+	repo_$repo
+}
+
+repo_debarchiver()
+{
 	if [ x"$1" = x"all" ]; then
 		echo "updating all debs"
 		debarchiver -so --scanall
@@ -54,6 +63,19 @@ repo()
 		echo "installing built results"
 		debarchiver -so
 	fi
+}
+
+repo_reprepro()
+{
+	for i in $DISTS
+	do
+		reprepro gensnapshot $i prev
+	done
+	reprepro processincoming default
+	for i in $DISTS
+	do
+		reprepro gensnapshot $i `date +%Y%m%d%H%M%S`
+	done
 }
 
 action=$1
