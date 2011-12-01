@@ -1,7 +1,6 @@
 #!/bin/bash
 
 export REPREPRO_BASE_DIR=/srv/debian-repo/reprepro
-repo=reprepro
 
 set -e
 if [ x"$DISTS" = x ]; then
@@ -80,23 +79,7 @@ commit()
 	git add debian/changelog && git commit -m "debian/changelog: $(dpkg-parsechangelog | awk '/^Version: / {print $2}')"
 }
 
-repo()
-{
-	repo_$repo
-}
-
-repo_debarchiver()
-{
-	if [ x"$1" = x"all" ]; then
-		echo "updating all debs"
-		debarchiver -so --scanall
-	else
-		echo "installing built results"
-		debarchiver -so
-	fi
-}
-
-repo_reprepro()
+repo
 {
 	echo "+++ installing build results +++"
 	for i in $DISTS
