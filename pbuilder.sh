@@ -13,6 +13,7 @@ fi
 
 # sort DISTS, workaround for reprepro missing *.orig.tar.gz when processincoming
 DISTS=`echo $DISTS | tr " " "\n" | sort | tr "\n" " "`
+ARCHS=`echo $ARCHS | tr " " "\n" | sort | tr "\n" " "`
 
 build_all()
 {
@@ -28,7 +29,7 @@ build_all()
 		do
 			echo "[$jobidx] building for $i $j"
 			if [ x"$action" = x"gbp" ]; then
-				DIST=$i ARCH=$j git-buildpackage --git-ignore-new --git-builder="pdebuild $inc_orig $build_bin_only" --git-cleaner='git reset --hard HEAD && git clean -df' >&/dev/null &
+				DIST=$i ARCH=$j git-buildpackage --git-ignore-new --git-builder="pdebuild $inc_orig $build_bin_only" --git-cleaner='/bin/true' >&/dev/null &
 				pidlist="$pidlist $!"
 			else
 				DIST=$i ARCH=$j pdebuild $inc_orig $build_bin_only >&/dev/null &
@@ -37,7 +38,7 @@ build_all()
 			inc_orig=""
 			build_bin_only="-- --binary-arch"
 			let "jobidx+=1"
-			sleep 5
+			#sleep 5
 		done
 	done
 
@@ -55,10 +56,13 @@ build_all()
 	done
 
 	if [ $failed -gt 0 ]; then
+		echo "$failed build(s) failed, please check build log"
 		return 1
 	fi
 	repo
+	echo "+++ git taging +++"
 	git-buildpackage --git-ignore-new --git-tag-only
+	echo "+++ git clean up +++"
 	git reset --hard HEAD && git clean -df
 }
 
@@ -94,6 +98,7 @@ repo_debarchiver()
 
 repo_reprepro()
 {
+	echo "+++ installing build results +++"
 	for i in $DISTS
 	do
 		reprepro gensnapshot $i prev
