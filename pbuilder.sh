@@ -5,14 +5,20 @@ repo=reprepro
 
 set -e
 if [ x"$DISTS" = x ]; then
-	DISTS="squeeze lenny"
+	DISTS="lenny squeeze"
 fi
 if [ x"$ARCHS" = x ]; then
 	ARCHS="amd64 i386"
 fi
 
+# sort DISTS, workaround for reprepro missing *.orig.tar.gz when processincoming
+DISTS=`echo $DISTS | tr " " "\n" | sort | tr "\n" " "`
+
 build_all()
 {
+	jobidx=1
+	failed=0
+	pidlist=""
 	inc_orig="--debbuildopts -sa"
 	echo "+++ start building, see ../*.build for log +++"
 	for i in $DISTS
@@ -20,19 +26,40 @@ build_all()
 		build_bin_only=""
 		for j in $ARCHS
 		do
-			echo "+++ building for $i $j +++"
+			echo "[$jobidx] building for $i $j"
 			if [ x"$action" = x"gbp" ]; then
-				DIST=$i ARCH=$j git-buildpackage --git-ignore-new --git-builder="pdebuild $inc_orig $build_bin_only" --git-cleaner='git reset --hard HEAD && git clean -df' >&/dev/null
+				DIST=$i ARCH=$j git-buildpackage --git-ignore-new --git-builder="pdebuild $inc_orig $build_bin_only" --git-cleaner='git reset --hard HEAD && git clean -df' >&/dev/null &
+				pidlist="$pidlist $!"
 			else
-				DIST=$i ARCH=$j pdebuild $inc_orig $build_bin_only >&/dev/null
+				DIST=$i ARCH=$j pdebuild $inc_orig $build_bin_only >&/dev/null &
+				pidlist="$pidlist $!"
 			fi
-			echo "done"
 			inc_orig=""
 			build_bin_only="-- --binary-arch"
+			let "jobidx+=1"
+			sleep 5
 		done
 	done
+
+	jobidx=1
+	for job in $pidlist
+	do
+		echo -n "waiting job [$jobidx]..."
+		if wait $job; then
+			echo "success"
+		else
+			let "failed+=1"
+			echo "failed"
+		fi
+		let "jobidx+=1"
+	done
+
+	if [ $failed -gt 0 ]; then
+		return 1
+	fi
 	repo
 	git-buildpackage --git-ignore-new --git-tag-only
+	git reset --hard HEAD && git clean -df
 }
 
 log()
