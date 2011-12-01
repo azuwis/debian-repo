@@ -71,7 +71,7 @@ log()
 	if [ -n $1 ]; then
 		pattern="*${1}*.build"
 	fi
-	pager `ls -t ../$pattern | head -n1`
+	pager `ls -t $pattern ../$pattern | head -n1`
 }
 
 commit()
