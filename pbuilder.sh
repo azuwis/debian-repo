@@ -79,7 +79,7 @@ commit()
 	git add debian/changelog && git commit -m "debian/changelog: $(dpkg-parsechangelog | awk '/^Version: / {print $2}')"
 }
 
-repo
+repo()
 {
 	echo "+++ installing build results +++"
 	for i in $DISTS
