@@ -6,7 +6,7 @@
 # read pbuilderrc.5 document for notes on specific options.
 MIRRORSITE=http://mirrors.163.com/debian
 COMPONENTS="main contrib non-free"
-EXTRAPACKAGES="lsb-release devscripts"
+EXTRAPACKAGES="lsb-release devscripts lintian"
 
 # for building on tmpfs, see http://www.netfort.gr.jp/~dancer/software/pbuilder-doc/pbuilder-doc.html#tmpfsforpbuilder
 # append `tmpfs /var/cache/pbuilder/build tmpfs defaults 0 0' to /etc/fstab
