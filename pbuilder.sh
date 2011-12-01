@@ -129,7 +129,7 @@ case "$action" in
 			echo "    create"
 			echo "    update"
 			echo "    build|gbp [src_dir ...]"
-			echo "    repo [all]"
+			echo "    repo"
 			echo "    log [pattern]"
 			echo "    commit"
 			exit 1
