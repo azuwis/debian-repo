@@ -9,6 +9,7 @@ Description: Custom debian squeeze repo for NetEase
 Tracking: all includechanges
 SignWith: yes
 Log: squeeze.log
+ --changes email-for-changes
 
 Codename: lenny
 Suite: old-stable
@@ -21,3 +22,4 @@ Description: Custom debian lenny repo for NetEase
 Tracking: all includechanges
 SignWith: yes
 Log: lenny.log
+ --changes email-for-changes
