@@ -12,7 +12,7 @@ Log: squeeze.log
  --changes email-for-changes
 
 Codename: lenny
-Suite: old-stable
+Suite: oldstable
 Components: main contrib non-free
 Architectures: i386 amd64 source
 Origin: Netease
