@@ -28,7 +28,7 @@ build_all()
 		do
 			echo "[$jobidx] building for $i $j"
 			if [ x"$action" = x"gbp" ]; then
-				DIST=$i ARCH=$j git-buildpackage --git-ignore-new --git-builder="pdebuild $inc_orig $build_bin_only" --git-cleaner='/bin/true' >&/dev/null &
+				DIST=$i ARCH=$j git-buildpackage --git-submodules --git-ignore-new --git-builder="pdebuild $inc_orig $build_bin_only" --git-cleaner='/bin/true' >&/dev/null &
 				pidlist="$pidlist $!"
 			else
 				DIST=$i ARCH=$j pdebuild $inc_orig $build_bin_only >&/dev/null &
