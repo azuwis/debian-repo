@@ -1,5 +1,5 @@
 #!/bin/bash
-apt-get install -y "${APTGETOPT[@]}" lsb-release devscripts
+#apt-get install -y "${APTGETOPT[@]}" lsb-release devscripts
 codename=$(lsb_release --short --codename)
 case "$codename" in
 	squeeze)
