@@ -97,13 +97,41 @@ action=$1
 
 case "$action" in
 	create | update)
+		jobidx=1
+		pidlist=""
+		log_dir=`mktemp -d`
+		echo "+++ starting $action, see $log_dir for logs +++"
 		for i in $DISTS
 		do
 			for j in $ARCHS
 			do
-				sudo DIST=$i ARCH=$j pbuilder $action
+				echo "[$jobidx] $action for $i $j"
+				sudo DIST=$i ARCH=$j pbuilder $action >& $log_dir/${i}_${j}_${action}.log &
+				pidlist="$pidlist $!"
+				let "jobidx+=1"
 			done
 		done
+
+		jobidx=1
+		failed=0
+		for job in $pidlist
+		do
+			echo -n "waiting job [$jobidx]..."
+			if wait $job; then
+				echo "success"
+			else
+				let "failed+=1"
+				echo "failed"
+			fi
+			let "jobidx+=1"
+		done
+
+		if [ $failed -gt 0 ]; then
+			echo "$failed $action(s) failed, please check $action log in $log_dir"
+		else
+			echo "$action all done, cleaning log"
+			rm -r $log_dir
+		fi
 		;;
 	build | gbp)
 		shift
