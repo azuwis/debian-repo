@@ -59,9 +59,14 @@ build_all()
 		return 1
 	fi
 	repo
+	echo "+++ git clean up +++"
+	clean
 	echo "+++ git taging +++"
 	git-buildpackage --git-ignore-new --git-tag-only
-	echo "+++ git clean up +++"
+}
+
+clean()
+{
 	git reset --hard HEAD && git clean -df
 }
 
