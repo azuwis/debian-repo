@@ -29,3 +29,4 @@ BASETGZ="/var/cache/pbuilder/base-${DISTRIBUTION}-${ARCHITECTURE}.tgz"
 
 # include .orig.tar.gz in .changes file
 #DEBBUILDOPTS="-sa"
+DEBBUILDOPTS="-i'\.git' -I.git"
