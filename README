@@ -1,6 +1,6 @@
 * Install these deb packages:
 
-	pbuilder reprepro devscripts debhelper fakeroot
+	pbuilder reprepro devscripts debhelper bsd-mailx fakeroot sudo
 
 * Have a look at these files, edit them accordingly:
 
@@ -50,7 +50,7 @@ Build results can be found at BUILDRESULT, see /etc/pbuilderrc
 	$ echo ${new_patch} >> debian/patches/series
 	$ git add debian/patches/series && git commit -m "${patch_log}"
 	$ git dch -R
-	$ git add debian/changelog && git commit --amend
+	$ git add debian/changelog && git commit -m 'debian/changelog: $deb_version'
 	$ git-buildpackage --git-ignore-new --git-builder='pdebuild' --git-cleaner="/bin/true"
 	$ git-buildpackage --git-ignore-new --git-tag-only
 	$ git [branch|tag] patch-queue/${current_tag} patch-queue/master
