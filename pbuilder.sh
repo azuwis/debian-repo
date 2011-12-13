@@ -42,7 +42,7 @@ build_all()
 			inc_orig=""
 			build_bin_only="-- --binary-arch"
 			let "jobidx+=1"
-			#sleep 5
+			sleep 5
 		done
 	done
 
