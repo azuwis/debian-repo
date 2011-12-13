@@ -63,6 +63,10 @@ build_all()
 		echo "$failed build(s) failed, please check build log"
 		return 1
 	fi
+}
+
+post-build()
+{
 	echo "+++ installing build results +++"
 	repo
 	echo "+++ git clean up +++"
@@ -178,6 +182,7 @@ case "$action" in
 			echo "    create"
 			echo "    update"
 			echo "    build|gbp [src_dir ...]"
+			echo "    post-build"
 			echo "    repo"
 			echo "    log [pattern]"
 			echo "    commit"
