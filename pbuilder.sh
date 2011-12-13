@@ -14,6 +14,10 @@ fi
 DISTS=`echo $DISTS | tr " " "\n" | sort | tr "\n" " "`
 ARCHS=`echo $ARCHS | tr " " "\n" | sort | tr "\n" " "`
 
+DATE=`date +%Y%m%d%H%M%S`
+SOURCE=`dpkg-parsechangelog | awk '/^Source: / {print $2}'`
+VERSION=`dpkg-parsechangelog | awk '/^Version: / {print $2}'`
+
 build_all()
 {
 	jobidx=1
@@ -27,11 +31,12 @@ build_all()
 		for j in $ARCHS
 		do
 			echo "[$jobidx] building for $i $j"
+			PDEBUILD="pdebuild --logfile ../${SOURCE}_${DATE}_${i}_${j}.build $inc_orig $build_bin_only"
 			if [ x"$action" = x"gbp" ]; then
-				DIST=$i ARCH=$j git-buildpackage --git-submodules --git-ignore-new --git-builder="pdebuild $inc_orig $build_bin_only" --git-cleaner='/bin/true' >&/dev/null &
+				DIST=$i ARCH=$j git-buildpackage --git-submodules --git-ignore-new --git-builder="$PDEBUILD" --git-cleaner='/bin/true' >&/dev/null &
 				pidlist="$pidlist $!"
 			else
-				DIST=$i ARCH=$j pdebuild $inc_orig $build_bin_only >&/dev/null &
+				DIST=$i ARCH=$j $PDEBUILD >&/dev/null &
 				pidlist="$pidlist $!"
 			fi
 			inc_orig=""
@@ -58,11 +63,12 @@ build_all()
 		echo "$failed build(s) failed, please check build log"
 		return 1
 	fi
+	echo "+++ installing build results +++"
 	repo
 	echo "+++ git clean up +++"
 	clean
 	echo "+++ git taging +++"
-	git-buildpackage --git-ignore-new --git-tag-only
+	tag
 }
 
 clean()
@@ -79,14 +85,24 @@ log()
 	pager `ls -t $pattern ../$pattern | head -n1`
 }
 
+tag()
+{
+	git-buildpackage --git-ignore-new --git-tag-only
+}
+
 commit()
 {
-	git add debian/changelog && git commit -m "debian/changelog: $(dpkg-parsechangelog | awk '/^Version: / {print $2}')"
+	git add debian/changelog && git commit -m "debian/changelog: $VERSION"
+}
+
+push()
+{
+	git push
+	git push --tags
 }
 
 repo()
 {
-	echo "+++ installing build results +++"
 	for i in $DISTS
 	do
 		reprepro gensnapshot $i prev
@@ -94,7 +110,7 @@ repo()
 	reprepro processincoming default
 	for i in $DISTS
 	do
-		reprepro gensnapshot $i `date +%Y%m%d%H%M%S`
+		reprepro gensnapshot $i $DATE
 	done
 }
 
@@ -165,6 +181,8 @@ case "$action" in
 			echo "    repo"
 			echo "    log [pattern]"
 			echo "    commit"
+			echo "    push"
+			echo "    tag"
 			exit 1
 		fi
 		;;
