@@ -15,11 +15,11 @@ DISTS=`echo $DISTS | tr " " "\n" | sort | tr "\n" " "`
 ARCHS=`echo $ARCHS | tr " " "\n" | sort | tr "\n" " "`
 
 DATE=`date +%Y%m%d%H%M%S`
-SOURCE=`dpkg-parsechangelog | awk '/^Source: / {print $2}'`
-VERSION=`dpkg-parsechangelog | awk '/^Version: / {print $2}'`
 
 build_all()
 {
+	SOURCE=`dpkg-parsechangelog | awk '/^Source: / {print $2}'`
+	VERSION=`dpkg-parsechangelog | awk '/^Version: / {print $2}'`
 	jobidx=1
 	failed=0
 	pidlist=""
@@ -31,7 +31,7 @@ build_all()
 		for j in $ARCHS
 		do
 			echo "[$jobidx] building for $i $j"
-			PDEBUILD="pdebuild --logfile ../${SOURCE}_${DATE}_${i}_${j}.build $inc_orig $build_bin_only"
+			PDEBUILD="pdebuild --logfile ../${SOURCE}_${VERSION}_${DATE}_${i}_${j}.build $inc_orig $build_bin_only"
 			if [ x"$action" = x"gbp" ]; then
 				DIST=$i ARCH=$j git-buildpackage --git-submodules --git-ignore-new --git-builder="$PDEBUILD" --git-cleaner='/bin/true' >&/dev/null &
 				pidlist="$pidlist $!"
@@ -96,6 +96,7 @@ tag()
 
 commit()
 {
+	VERSION=`dpkg-parsechangelog | awk '/^Version: / {print $2}'`
 	git add debian/changelog && git commit -m "debian/changelog: $VERSION"
 }
 
