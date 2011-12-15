@@ -132,7 +132,7 @@ case "$action" in
 			for j in $ARCHS
 			do
 				echo "[$jobidx] $action for $i $j"
-				sudo DIST=$i ARCH=$j pbuilder $action >& $log_dir/${i}_${j}_${action}.log &
+				sudo DIST=$i ARCH=$j pbuilder $action --othermirror "deb http://repo.163.org/debian ${i} main contrib non-free" >& $log_dir/${i}_${j}_${action}.log &
 				pidlist="$pidlist $!"
 				let "jobidx+=1"
 			done
