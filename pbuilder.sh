@@ -119,6 +119,40 @@ repo()
 	done
 }
 
+watch()
+{
+	if [ x"$1" = x"" ]; then
+		src_dir=`pwd`
+	else
+		src_dir=$1
+	fi
+	for source in $src_dir/*
+	do
+		debian_dist=squeeze
+		if [ -f $source/watch ]; then
+			debian_changelog=`ls $source/*/debian/changelog|head -n1`
+			debian_source=`dpkg-parsechangelog -l$debian_changelog | awk '/^Source: / {print $2}'`
+			debian_version=`dpkg-parsechangelog -l$debian_changelog | awk '/^Version: / {print $2}'`
+			parse_dist=`dpkg-parsechangelog -l$debian_changelog | awk '/^Distribution: / {print $2}'`
+			case $parse_dist in
+				*-backports)
+					debian_dist=$parse_dist
+				;;
+				*)
+				;;
+			esac
+			. $source/watch
+			upstream_version=`curl -s http://packages.debian.org/source/${debian_dist}/${debian_source} | grep "Source Package: ${debian_source}" | awk -F'(\(|\))' '{print $2}'`
+			if [ x"$upstream_version" != x"" ]; then
+				#echo "${debian_source}: ${debian_dist} u(${upstream_version}) l(${debian_version})"
+				if dpkg --compare-versions "$upstream_version" gt "$debian_version"; then
+					echo "new debian version ${debian_source}: ${upstream_version} > ${debian_version}"
+				fi
+			fi
+		fi
+	done
+}
+
 action=$1
 
 case "$action" in
