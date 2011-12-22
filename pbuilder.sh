@@ -146,8 +146,10 @@ watch()
 			if [ x"$upstream_version" != x"" ]; then
 				#echo "${debian_source}: ${debian_dist} u(${upstream_version}) l(${debian_version})"
 				if dpkg --compare-versions "$upstream_version" gt "$debian_version"; then
-					echo "new debian version ${debian_source}: ${upstream_version} > ${debian_version}"
+					echo "${debian_source}: new debian version ${upstream_version} > ${debian_version}"
 				fi
+			else
+				echo "${debian_source}: can't get upstream version"
 			fi
 		fi
 	done
