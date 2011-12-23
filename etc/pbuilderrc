@@ -6,7 +6,7 @@
 # read pbuilderrc.5 document for notes on specific options.
 MIRRORSITE="http://repo.163.org:3142/debian"
 COMPONENTS="main contrib non-free"
-EXTRAPACKAGES="lsb-release devscripts lintian"
+EXTRAPACKAGES="fakeroot lsb-release devscripts lintian"
 CCACHEDIR=""
 
 # for building on tmpfs, see http://www.netfort.gr.jp/~dancer/software/pbuilder-doc/pbuilder-doc.html#tmpfsforpbuilder
