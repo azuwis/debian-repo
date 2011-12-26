@@ -77,7 +77,11 @@ post-build()
 
 clean()
 {
-	git reset --hard HEAD && git clean -df
+	if [ -f debian/changelog ]; then
+		git reset --hard HEAD && git clean -df
+	else
+		echo "skip clean, not in debian source dir"
+	fi
 }
 
 log()
