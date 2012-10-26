@@ -2,13 +2,17 @@
 
 	pbuilder reprepro devscripts debhelper bsd-mailx fakeroot sudo
 
+* link ./pbuilder.sh to /usr/local/bin:
+
+	link -s /path/to/pbuilder.sh /usr/local/bin/mypbuilder
+
 * Have a look at these files, edit them accordingly:
 
 	/etc/pbuilderrc
 
 * Edit ./pbuilder.sh, change DISTS and ARCHS to what you want to build against. Initialize chroot environment:
 
-	$ ./pbuilder.sh create
+	$ mypbuilder create
 
 * Get debian source package and unpack:
 
@@ -21,21 +25,21 @@ or
 Building debs from a unpacked debian source:
 
 	$ cd package_source_dir
-	$ /path/to/pbuilder.sh build
+	$ mypbuilder build
 
 If you use git-buildpackage, run:
 
-	$ /path/to/pbuilder.sh gbp
+	$ mypbuilder gbp
 
 You can also use this to build multiple sources:
 
-	$ /path/to/pbuilder.sh [build|gbp] /path/to/source1 /path/to/source2 ...
+	$ mypbuilder [build|gbp] /path/to/source1 /path/to/source2 ...
 
 Build results can be found at BUILDRESULT, see /etc/pbuilderrc
 
 * Update should be applied periodically using:
 
-	$ ./pbuilder.sh update
+	$ mypbuilder update
 
 * Workflow using git-buildpackage
 
@@ -45,12 +49,15 @@ Build results can be found at BUILDRESULT, see /etc/pbuilderrc
 	$ git add && git commit -m 'patch name'
 	$ git checkout master
 	$ gbp-pq export
-	$ git add debian/patches/${new_patch}
-	$ git checkout -- . && git clean -df
-	$ echo ${new_patch} >> debian/patches/series
-	$ git add debian/patches/series && git commit -m "${patch_log}"
+
+	<$ git add debian/patches/${new_patch}
+one cmd	<$ git checkout -- . && git clean -df
+	<$ echo ${new_patch} >> debian/patches/series
+	<$ git add debian/patches/series && git commit -m "${patch_log}"
+
 	$ git dch -R
-	$ git add debian/changelog && git commit -m 'debian/changelog: $deb_version'
-	$ git-buildpackage --git-ignore-new --git-builder='pdebuild' --git-cleaner="/bin/true"
-	$ git-buildpackage --git-ignore-new --git-tag-only
+	$ mypbuilder commit
+	$ mypbuilder gbp
+	$ mypbuilder post-build
+        $ mypbuilder push
 	$ git [branch|tag] patch-queue/${current_tag} patch-queue/master
