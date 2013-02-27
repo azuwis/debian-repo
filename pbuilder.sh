@@ -16,6 +16,8 @@ ARCHS=`echo $ARCHS | tr " " "\n" | sort | tr "\n" " "`
 
 DATE=`date +%Y%m%d%H%M%S`
 
+NCPU=`grep "^processor" /proc/cpuinfo | wc -l`
+
 build_all()
 {
 	SOURCE=`dpkg-parsechangelog | awk '/^Source: / {print $2}'`
@@ -33,7 +35,7 @@ build_all()
 			echo "[$jobidx] building for $i $j"
 			PDEBUILD="pdebuild --logfile ../${SOURCE}_${VERSION}_${DATE}_${i}_${j}.build $inc_orig $build_bin_only"
 			if [ x"$action" = x"gbp" ]; then
-				DIST=$i ARCH=$j git-buildpackage --git-submodules --git-ignore-new --git-builder="$PDEBUILD" --git-cleaner='/bin/true' >&/dev/null &
+				DIST=$i ARCH=$j DEB_BUILD_OPTIONS="nocheck parallel=$((NCPU/2))" git-buildpackage --git-submodules --git-ignore-new --git-builder="$PDEBUILD" --git-cleaner='/bin/true' >&/dev/null &
 				pidlist="$pidlist $!"
 			else
 				DIST=$i ARCH=$j $PDEBUILD >&/dev/null &
