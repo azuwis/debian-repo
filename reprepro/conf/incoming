@@ -1,4 +1,4 @@
 Name: default
 IncomingDir: /var/cache/pbuilder/result
 TempDir: /tmp
-Allow: testing>wheezy stable>squeeze oldstable>lenny
+Allow: unstable>sid testing>wheezy stable>squeeze oldstable>lenny

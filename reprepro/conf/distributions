@@ -1,3 +1,15 @@
+Codename: sid
+Suite: unstable
+Components: main contrib non-free
+Architectures: i386 amd64 source
+Origin: Netease
+Label: Netease
+Version: 1.0
+Description: Custom debian sid repo for NetEase
+Tracking: all includechanges
+SignWith: yes
+Log: sid.log
+
 Codename: wheezy
 Suite: testing
 Components: main contrib non-free
