@@ -16,5 +16,5 @@ case "$codename" in
 		;;
 esac
 cd /tmp/buildd/*/debian/..
-debchange --append --maintmaint --distribution "${dist}" "build against ${codename}."
+debchange --append --maintmaint --distribution "${dist}" "Build against ${codename}."
 sed -i '1s/)/'${codename}')/' debian/changelog
