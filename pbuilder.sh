@@ -1,10 +1,12 @@
 #!/bin/bash
 
 export REPREPRO_BASE_DIR=/srv/debian-repo/reprepro
+REPREPRO_STAGING_DIR=/srv/debian-repo/reprepro-staging
+PBUILDER_RESULT_DIR=/var/cache/pbuilder/result
 
 set -e
 if [ x"$DISTS" = x ]; then
-	DISTS="lenny squeeze"
+	DISTS="lenny squeeze wheezy"
 fi
 if [ x"$ARCHS" = x ]; then
 	ARCHS="amd64 i386"
@@ -125,6 +127,13 @@ repo()
 	done
 }
 
+staging()
+{
+	mkdir -p ${PBUILDER_RESULT_DIR}/staging
+	cp ${PBUILDER_RESULT_DIR}/* ${PBUILDER_RESULT_DIR}/staging || true
+	reprepro -b ${REPREPRO_STAGING_DIR} processincoming default
+}
+
 watch()
 {
 	if [ x"$1" = x"" ]; then
@@ -231,6 +240,7 @@ case "$action" in
 			echo "    commit"
 			echo "    push"
 			echo "    tag"
+			echo "    staging"
 			exit 1
 		fi
 		;;

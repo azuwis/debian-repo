@@ -1,0 +1,5 @@
+#!/bin/bash
+to=sysadmin@hz.netease.com
+changes=${5##*/}
+package=${changes%.*}
+mail -s "$1: $package added to $2" $to < $5
