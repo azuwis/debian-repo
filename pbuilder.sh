@@ -134,6 +134,26 @@ staging()
 	reprepro -b ${REPREPRO_STAGING_DIR} processincoming default
 }
 
+new-patch()
+{
+	git checkout -- debian/patches/
+	num_patches=`cat debian/patches/series | wc -l`
+	pushd debian/patches >& /dev/null
+	for i in *.patch
+	do
+		if [[ ${i:0:4} =~ ^[0-9]+$ ]] && [ ${i:0:4} -gt $num_patches ]; then
+			git add $i
+			echo $i >> series
+			git add series
+			tmp=${i:5}
+			msg=${tmp/%.patch/}
+			git commit -m "debian/patches/: $msg"
+		fi
+	done
+	popd >& /dev/null
+	git clean -f
+}
+
 watch()
 {
 	# source_pkg_name local_dist debian_dist
@@ -216,7 +236,7 @@ case "$action" in
 		fi
 		;;
 	*)
-		if type $action | grep -q function; then
+		if [ $(type -t $action) == "function" ]; then
 			shift
 			$action "$@"
 		else
@@ -232,6 +252,7 @@ case "$action" in
 			echo "    tag"
 			echo "    watch list_file"
 			echo "    staging"
+			echo "    new-patch"
 			exit 1
 		fi
 		;;

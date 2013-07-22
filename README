@@ -22,7 +22,7 @@ or
 	$ dget uri://to/*.dsc
 	$ dpkg-souce -x *.dsc
 
-Building debs from a unpacked debian source:
+* Building debs from a unpacked debian source:
 
 	$ cd package_source_dir
 	$ mypbuilder build
@@ -49,12 +49,7 @@ Build results can be found at BUILDRESULT, see /etc/pbuilderrc
 	$ git add && git commit -m 'patch name'
 	$ git checkout master
 	$ gbp-pq export
-
-	<$ git add debian/patches/${new_patch}
-one cmd	<$ git checkout -- . && git clean -df
-	<$ echo ${new_patch} >> debian/patches/series
-	<$ git add debian/patches/series && git commit -m "${patch_log}"
-
+	$ mypbuilder new-patch
 	$ git dch -R
 	$ mypbuilder commit
 	$ mypbuilder gbp
