@@ -6,7 +6,7 @@ PBUILDER_RESULT_DIR=/var/cache/pbuilder/result
 
 set -e
 if [ x"$DISTS" = x ]; then
-	DISTS="lenny squeeze wheezy"
+	DISTS="squeeze wheezy"
 fi
 if [ x"$ARCHS" = x ]; then
 	ARCHS="amd64 i386"
