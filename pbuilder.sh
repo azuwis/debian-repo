@@ -136,36 +136,26 @@ staging()
 
 watch()
 {
+	# source_pkg_name local_dist debian_dist
+
 	if [ x"$1" = x"" ]; then
-		src_dir=`pwd`
+		exit 1
 	else
-		src_dir=$1
+		watch_list=$1
 	fi
-	for source in $src_dir/*
+	cat $watch_list | while read debian_source local_dist debian_dist
 	do
-		debian_dist=squeeze
-		if [ -f $source/watch ]; then
-			debian_changelog=`ls $source/*/debian/changelog|head -n1`
-			debian_source=`dpkg-parsechangelog -l$debian_changelog | awk '/^Source: / {print $2}'`
-			debian_version=`dpkg-parsechangelog -l$debian_changelog | awk '/^Version: / {print $2}'`
-			parse_dist=`dpkg-parsechangelog -l$debian_changelog | awk '/^Distribution: / {print $2}'`
-			case $parse_dist in
-				*-backports)
-					debian_dist=$parse_dist
-				;;
-				*)
-				;;
-			esac
-			. $source/watch
-			upstream_version=`curl -s http://packages.debian.org/source/${debian_dist}/${debian_source} | grep "Source Package: ${debian_source}" | awk -F'(\(|\))' '{print $2}'`
-			if [ x"$upstream_version" != x"" ]; then
-				#echo "${debian_source}: ${debian_dist} u(${upstream_version}) l(${debian_version})"
-				if dpkg --compare-versions "$upstream_version" gt "$debian_version"; then
-					echo "${debian_source}: new debian version ${upstream_version} > ${debian_version}"
-				fi
-			else
-				echo "${debian_source}: can't get upstream version"
+		local_version=`reprepro --list-format '${version}' listfilter $local_dist '$Source (== '$debian_source'), $Architecture (==source)'`
+		if [ x"$debian_dist" = x"" ]; then
+			debian_dist=$local_dist
+		fi
+		debian_version=`curl -s http://packages.debian.org/source/${debian_dist}/${debian_source} | grep "Source Package: ${debian_source}" | awk -F'(\(|\))' '{print $2}'`
+		if [ x"$debian_version" != x"" ]; then
+			if dpkg --compare-versions "$debian_version" gt "$local_version" || [ x"$DEBUG" != x"" ]; then
+				echo "${debian_source}: debian(${debian_dist} ${debian_version}) local(${local_dist} ${local_version})"
 			fi
+		else
+			echo "${debian_source}: can't get upstream version"
 		fi
 	done
 }
@@ -240,6 +230,7 @@ case "$action" in
 			echo "    commit"
 			echo "    push"
 			echo "    tag"
+			echo "    watch list_file"
 			echo "    staging"
 			exit 1
 		fi
