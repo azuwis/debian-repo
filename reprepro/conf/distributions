@@ -20,6 +20,7 @@ Version: 1.0
 Description: Custom debian wheezy repo for NetEase
 Tracking: all includechanges
 SignWith: yes
+Update: haproxy
 Log: wheezy.log
  --changes email-for-changes
 

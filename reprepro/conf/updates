@@ -1,0 +1,6 @@
+Name: haproxy
+Method: http://ftp2.jp.debian.org/debian
+Architectures: i386 amd64 source
+Suite: wheezy-backports
+VerifyRelease: 46925553
+FilterFormula: $Source (== haproxy)
