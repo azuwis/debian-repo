@@ -3,7 +3,6 @@ COWBUILDER_BASE="${REPO_BASE}/pbuilder"
 BUILDPLACE="${COWBUILDER_BASE}/build/"
 BUILDRESULT="${COWBUILDER_BASE}/result/"
 APTCACHE="${COWBUILDER_BASE}/aptcache/"
-HOOKDIR="${COWBUILDER_BASE}/hooks"
 
 MIRRORSITE="http://repo.163.org/debian"
 OTHERMIRROR="deb http://repo.163.org/netease ${DIST} main contrib non-free"
@@ -14,6 +13,7 @@ EXTRAPACKAGES="fakeroot lsb-release devscripts lintian screen vim less"
 #EXTRAPACKAGES="${EXTRAPACKAGES} eatmydata"
 
 CCACHEDIR=""
+HOOKDIR="${REPO_BASE}/hooks"
 
 # Include .orig.tar.gz in .changes file
 #DEBBUILDOPTS="-sa"
