@@ -140,6 +140,20 @@ ucl() {
   done
 }
 
+# New changelog
+nc() {
+  check_dir
+  branch=$(git rev-parse --abbrev-ref HEAD)
+  version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
+  if echo ${version} | grep -q "${branch}[0-9]*$"; then
+    git-dch --release
+  else
+    git-dch --release --new-version="${version}+${branch}1"
+  fi
+  version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
+  git add debian/changelog && git commit -m "debian/changelog: $version"
+}
+
 # Build
 build() {
   check_dir
@@ -248,12 +262,6 @@ log() {
 
 tag() {
   git-buildpackage --git-ignore-new --git-tag-only
-}
-
-# New changelog
-nc() {
-  VERSION=`dpkg-parsechangelog | awk '/^Version: / {print $2}'`
-  git add debian/changelog && git commit -m "debian/changelog: $VERSION"
 }
 
 push() {
