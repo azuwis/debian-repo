@@ -1,5 +1,4 @@
-reprepro/db/
-reprepro/dists/
-reprepro/logs/
-reprepro/pool/
+reprepro*/
+!reprepro*/conf/
+pbuilder/
 src/
