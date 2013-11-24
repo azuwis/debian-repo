@@ -107,6 +107,8 @@ check_dir() {
 
 # Init build host env
 prepare() {
+  ln -s ${REPO_BASE}/gbp.conf ~/.gbp.conf
+  ln -s ${REPO_BASE}/pbuilderrc ~/.pbuilderrc
   sudo apt-get install git-buildpackage cowbuilder reprepro bsd-mailx sudo tmux
 }
 
