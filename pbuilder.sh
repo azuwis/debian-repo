@@ -193,7 +193,6 @@ clean() {
 # Build
 build() {
   check_dir
-  clean ask
   NCPU=$(grep "^processor" /proc/cpuinfo | wc -l)
   # only build in one ARCH for source which only has `Architecture: all' packages
   if [ x"$(cat debian/control |grep '^Architecture:' | grep -v all)" == x ]; then
@@ -335,7 +334,6 @@ action="$1"
 case "$action" in
 update|create|login)
   ucl "$@"
-  exit $?
   ;;
 build)
   shift
