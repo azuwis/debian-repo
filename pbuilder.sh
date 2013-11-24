@@ -92,6 +92,11 @@ tmux_run() {
   tmux select-layout even-vertical >& /dev/null
 }
 
+# Kill other tmux panes
+kp() {
+  tmux kill-pane -a
+}
+
 # Exit if not inside debian source dir
 check_dir() {
   if [ ! -f "debian/changelog" ]; then
