@@ -5,20 +5,13 @@
 set -e
 
 # Helper functions
-err() {
-  echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $@" >&2
-}
 load_var() {
   local i
   for i in ${PBUILDERRC_FILES}; do
-    if [ -e "$i" ]; then
+    if [ -f "$i" ]; then
       eval `grep "^$1" $i`
     fi
   done
-}
-tmux_run() {
-  tmux split-window -d "$@; echo; read -p '#### finished ####' tmp"
-  tmux select-layout even-vertical >& /dev/null
 }
 usage() {
   cat <<EOF
@@ -55,10 +48,8 @@ PBUILDERRC_FILES="/etc/pbuilderrc ~/.pbuilderrc"
 # git-pbuilder
 load_var REPO_BASE
 load_var COWBUILDER_BASE
-export COWBUILDER_BASE
-GIT_PBUILDER_OPTIONS="-nc"
 # reprepro
-export REPREPRO_BASE_DIR="${REPO_BASE}/reprepro"
+REPREPRO_BASE_DIR="${REPO_BASE}/reprepro"
 REPREPRO_STAGING_DIR="${REPO_BASE}/reprepro-staging"
 load_var BUILDRESULT
 # other
@@ -91,9 +82,19 @@ ARCHS=${ARCHS:-$DEFAULT_ARCHS}
 DISTS=`echo $DISTS | tr " " "\n" | sort | tr "\n" " "`
 ARCHS=`echo $ARCHS | tr " " "\n" | sort | tr "\n" " "`
 
+err() {
+  echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $@" >&2
+}
+
+# Run command in tmux panes, and pause after finish
+tmux_run() {
+  tmux split-window -d "$@; echo; read -p '#### finished ####' tmp"
+  tmux select-layout even-vertical >& /dev/null
+}
+
 # Exit if not inside debian source dir
 check_dir() {
-  if [ ! -e "debian/changelog" ]; then
+  if [ ! -f "debian/changelog" ]; then
     err "Please run inside debian source dir."
     exit 1
   fi
@@ -129,9 +130,9 @@ ucl() {
 
 # Build
 build() {
-  NCPU=`grep "^processor" /proc/cpuinfo | wc -l`
   check_dir
   clean ask
+  NCPU=$(grep "^processor" /proc/cpuinfo | wc -l)
   # only build in one ARCH for source which only has `Architecture: all' packages
   if [ x"$(cat debian/control |grep '^Architecture:' | grep -v all)" == x ]; then
     err "Architecture: all, build only once per DIST."
