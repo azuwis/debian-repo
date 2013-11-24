@@ -140,6 +140,10 @@ ucl() {
   done
 }
 
+download() {
+  git-import-dsc --download "$@"
+}
+
 # New changelog
 nc() {
   check_dir
@@ -152,6 +156,38 @@ nc() {
   fi
   version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
   git add debian/changelog && git commit -m "debian/changelog: $version"
+}
+
+# New patch
+np() {
+  gbp-pq export
+  git checkout -- debian/patches/
+  num_patches=`cat debian/patches/series | wc -l`
+  pushd debian/patches >& /dev/null
+  for i in *.patch; do
+    if [[ ${i:0:4} =~ ^[0-9]+$ ]] && [ ${i:0:4} -gt $num_patches ]; then
+      git add $i
+      echo $i >> series
+      git add series
+      tmp=${i:5}
+      msg=${tmp/%.patch/}
+      git commit -m "debian/patches/: $msg"
+    fi
+  done
+  popd >& /dev/null
+  git clean -f
+}
+
+clean() {
+  check_dir
+  if [ $(git status --porcelain | wc -l) -eq 0 ]; then 
+    return
+  fi
+  if [ x"$1" == x"ask" ]; then
+    git status --porcelain
+    read -p "Clear git working tree?(Ctrl-C to cancel)" tmp
+  fi
+  git reset --hard HEAD && git clean -df
 }
 
 # Build
@@ -177,10 +213,6 @@ build() {
       bin_only="-b"
     done
   done
-}
-
-download() {
-  git-import-dsc --download "$@"
 }
 
 build_all() {
@@ -231,42 +263,10 @@ build_all() {
   fi
 }
 
-post-build() {
-  echo "+++ installing build results +++"
-  repo
-  echo "+++ git clean up +++"
-  clean
-  echo "+++ git taging +++"
-  tag
-}
-
-clean() {
-  check_dir
-  if [ $(git status --porcelain | wc -l) -eq 0 ]; then 
-    return
-  fi
-  if [ x"$1" == x"ask" ]; then
-    git status --porcelain
-    read -p "Clear git working tree?(Ctrl-C to cancel)" tmp
-  fi
-  git reset --hard HEAD && git clean -df
-}
-
-log() {
-  pattern="*.build"
-  if [ -n $1 ]; then
-    pattern="*${1}*.build"
-  fi
-  pager `ls -t $pattern ../$pattern | head -n1`
-}
-
-tag() {
-  git-buildpackage --git-ignore-new --git-tag-only
-}
-
-push() {
-  git push
-  git push --tags
+staging() {
+  mkdir -p ${PBUILDER_RESULT_DIR}/staging
+  cp ${PBUILDER_RESULT_DIR}/* ${PBUILDER_RESULT_DIR}/staging || true
+  reprepro -b ${REPREPRO_STAGING_DIR} processincoming default
 }
 
 repo() {
@@ -281,30 +281,30 @@ repo() {
   done
 }
 
-staging() {
-  mkdir -p ${PBUILDER_RESULT_DIR}/staging
-  cp ${PBUILDER_RESULT_DIR}/* ${PBUILDER_RESULT_DIR}/staging || true
-  reprepro -b ${REPREPRO_STAGING_DIR} processincoming default
+tag() {
+  git-buildpackage --git-ignore-new --git-tag-only
 }
 
-# New patch
-np() {
-  gbp-pq export
-  git checkout -- debian/patches/
-  num_patches=`cat debian/patches/series | wc -l`
-  pushd debian/patches >& /dev/null
-  for i in *.patch; do
-    if [[ ${i:0:4} =~ ^[0-9]+$ ]] && [ ${i:0:4} -gt $num_patches ]; then
-      git add $i
-      echo $i >> series
-      git add series
-      tmp=${i:5}
-      msg=${tmp/%.patch/}
-      git commit -m "debian/patches/: $msg"
-    fi
-  done
-  popd >& /dev/null
-  git clean -f
+post-build() {
+  echo "+++ installing build results +++"
+  repo
+  echo "+++ git clean up +++"
+  clean
+  echo "+++ git taging +++"
+  tag
+}
+
+push() {
+  git push
+  git push --tags
+}
+
+log() {
+  pattern="*.build"
+  if [ -n $1 ]; then
+    pattern="*${1}*.build"
+  fi
+  pager `ls -t $pattern ../$pattern | head -n1`
 }
 
 watch() {
