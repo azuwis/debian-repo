@@ -148,6 +148,10 @@ download() {
 nc() {
   check_dir
   branch=$(git rev-parse --abbrev-ref HEAD)
+  # set default string appended to $version
+  if [ x"$branch" = x"master" ]; then
+    branch="build"
+  fi
   version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
   if echo ${version} | grep -q "${branch}[0-9]*$"; then
     git-dch --release
