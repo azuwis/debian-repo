@@ -60,6 +60,11 @@ EOF
 # Global settings
 # git-pbuilder
 load_var REPO_BASE
+if [ x"${REPO_BASE}" = x"CHANGEME" ]; then
+  err "REPO_BASE in pbuilderrc not changed, running init."
+  init
+  exit $?
+fi
 load_var COWBUILDER_BASE
 # reprepro
 REPREPRO_BASE_DIR="${REPO_BASE}/reprepro"
