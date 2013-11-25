@@ -216,17 +216,19 @@ build() {
     err "Architecture: all, build only once per DIST."
     ARCHS=$(echo ${ARCHS} | awk '{print $1}')
   fi
-  inc_orig="-sa"
+  # include orig source for the first build
+  source_type="-sa"
   for DIST in ${DISTS}; do
-    bin_only=""
+    # full build for the first ARCH in every DISTS, rest is binary-only build
+    build_type="-F"
     for ARCH in ${ARCHS}; do
       tmux_run "DEB_BUILD_OPTIONS='nocheck parallel=$((NCPU/2))' \
         COWBUILDER_BASE=${COWBUILDER_BASE} time -p git-buildpackage \
         --git-export-dir='../build_${DIST}_${ARCH}' \
         --git-dist=${DIST} --git-arch=${ARCH} \
-        ${inc_orig} ${bin_only} $*"
-      inc_orig="-sd"
-      bin_only="-b"
+        -nc ${source_type} ${build_type} $*"
+      source_type="-sd"
+      build_type="-B"
     done
   done
 }
