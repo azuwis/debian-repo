@@ -2,7 +2,7 @@
 to=sysadmin@hz.netease.com
 changes=${5##*/}
 package=${changes%.*}
-if echo $REPREPRO_BASE_DIR | grep -qs 'staging/$'; then
+if echo $REPREPRO_BASE_DIR | grep -Eqs 'staging/?$'; then
   repo="repo-staging"
 else
   repo="repo"
