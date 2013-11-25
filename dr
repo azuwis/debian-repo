@@ -9,12 +9,10 @@ err() {
   echo "$@" >&2
 }
 load_var() {
-  local i
-  for i in ${PBUILDERRC_FILES}; do
-    if [ -f "$i" ]; then
-      eval `grep "^$1" $i`
-    fi
-  done
+  local file=~/.pbuilderrc
+  if [ -f "$file" ]; then
+    eval $(grep "^$1" $file)
+  fi
 }
 usage() {
   cat <<EOF
@@ -47,7 +45,6 @@ EOF
 }
 
 # Global settings
-PBUILDERRC_FILES="/etc/pbuilderrc ~/.pbuilderrc"
 # git-pbuilder
 load_var REPO_BASE
 load_var COWBUILDER_BASE
