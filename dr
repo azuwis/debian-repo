@@ -327,31 +327,31 @@ case "$action" in
   k) action=kill_pane ;;
 esac
 case "$action" in
-update|create|login)
-  shift
-  ucl $action "$@"
-  ;;
-build)
-  shift
-  if [ $# -gt 0 ]; then
-    for dir in $@
-    do
-      if [ -d "$dir" ]; then
-        pushd "$dir"
-        build
-        popd
-      fi
-    done
-  else
-    build
-  fi
-  ;;
-*)
-  if [ x$(type -t $action) == x"function" ]; then
+  update|create|login)
     shift
-    $action "$@"
-  else
-    usage
-  fi
-  ;;
+    ucl $action "$@"
+    ;;
+  build)
+    shift
+    if [ $# -gt 0 ]; then
+      for dir in $@
+      do
+        if [ -d "$dir" ]; then
+          pushd "$dir"
+          build
+          popd
+        fi
+      done
+    else
+      build
+    fi
+    ;;
+  *)
+    if [ x$(type -t $action) == x"function" ]; then
+      shift
+      $action "$@"
+    else
+      usage
+    fi
+    ;;
 esac
