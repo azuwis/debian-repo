@@ -48,7 +48,8 @@ SUBCOMMAND:
   d|download
   np|new_patch
   nc|new_change
-  b|build [src_dir ...]
+  b|build [<debuild-options>]
+  ba|build_all [src_dir ...]
   s|staging
   i|include
   t|tag
@@ -230,6 +231,17 @@ build() {
   done
 }
 
+build_all() {
+  for dir in "$@"
+  do
+    if [ -d "$dir" ]; then
+      pushd "$dir"
+      build
+      popd
+    fi
+  done
+}
+
 reprepro_include() {
   check_dir
   local source
@@ -318,6 +330,7 @@ case "$action" in
   np) action=new_patch ;;
   nc) action=new_change ;;
   b) action=build ;;
+  ba) action=build_all ;;
   s) action=staging ;;
   i) action=include ;;
   t) action=tag ;;
@@ -330,21 +343,6 @@ case "$action" in
   update|create|login)
     shift
     ucl $action "$@"
-    ;;
-  build)
-    shift
-    if [ $# -gt 0 ]; then
-      for dir in $@
-      do
-        if [ -d "$dir" ]; then
-          pushd "$dir"
-          build
-          popd
-        fi
-      done
-    else
-      build
-    fi
     ;;
   *)
     if [ x$(type -t $action) == x"function" ]; then
