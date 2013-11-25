@@ -110,7 +110,7 @@ tmux_run() {
 }
 
 # Kill other tmux panes
-kp() {
+kill_pane() {
   tmux kill-pane -a
 }
 
@@ -155,7 +155,7 @@ download() {
 }
 
 # New changelog
-nc() {
+new_change() {
   check_dir
   branch=$(git rev-parse --abbrev-ref HEAD)
   # set default string appended to $version
@@ -173,7 +173,7 @@ nc() {
 }
 
 # New patch
-np() {
+new_patch() {
   gbp-pq export
   git checkout -- debian/patches/
   num_patches=`cat debian/patches/series | wc -l`
@@ -307,6 +307,7 @@ case "$action" in
   it) action=include_tag ;;
   p) action=push ;;
   w) action=watch ;;
+  k) action=kill_pane ;;
 esac
 case "$action" in
 update|create|login)
