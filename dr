@@ -70,9 +70,7 @@ fi
 load_var COWBUILDER_BASE
 # reprepro
 REPREPRO_BASE_DIR="${REPO_BASE}/repo"
-export REPREPRO_BASE_DIR
 REPREPRO_STAGING_DIR="${REPO_BASE}/repo-staging"
-load_var BUILDRESULT
 # other
 DEFAULT_DISTS="squeeze wheezy"
 DEFAULT_ARCHS="amd64 i386"
@@ -228,20 +226,30 @@ build() {
   done
 }
 
+reprepro_include() {
+  check_dir
+  local source
+  source=$(dpkg-parsechangelog | awk '/^Source: / {print $2}')
+  local version
+  version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
+  for DIST in ${DISTS}; do
+    for ARCH in ${ARCHS}; do
+      reprepro -b "$1" include ${DIST} "../build_${DIST}_${ARCH}/${source}_${version}${DIST}_${ARCH}.changes"
+    done
+  done
+}
+
 staging() {
-  mkdir -p ${PBUILDER_RESULT_DIR}/staging
-  cp ${PBUILDER_RESULT_DIR}/* ${PBUILDER_RESULT_DIR}/staging || true
-  reprepro -b ${REPREPRO_STAGING_DIR} processincoming default
+  reprepro_include "${REPREPRO_STAGING_DIR}"
 }
 
 include() {
-  for i in $DISTS
-  do
+  DATE=$(date +%Y-%m%d-%H%M%S)
+  for i in $DISTS; do
     reprepro gensnapshot $i prev
   done
-  reprepro processincoming default
-  for i in $DISTS
-  do
+  reprepro_include "${REPREPRO_BASE_DIR}"
+  for i in $DISTS; do
     reprepro gensnapshot $i $DATE
   done
 }
