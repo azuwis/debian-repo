@@ -5,6 +5,9 @@
 set -e
 
 # Helper functions
+err() {
+  echo "$@" >&2
+}
 load_var() {
   local i
   for i in ${PBUILDERRC_FILES}; do
@@ -81,10 +84,6 @@ ARCHS=${ARCHS:-$DEFAULT_ARCHS}
 # processincoming
 DISTS=`echo $DISTS | tr " " "\n" | sort | tr "\n" " "`
 ARCHS=`echo $ARCHS | tr " " "\n" | sort | tr "\n" " "`
-
-err() {
-  echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $@" >&2
-}
 
 # Run command in tmux panes, and pause after finish
 tmux_run() {
