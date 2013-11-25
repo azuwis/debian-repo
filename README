@@ -56,3 +56,5 @@ Build results can be found at BUILDRESULT, see /etc/pbuilderrc
 	$ mypbuilder post-build
         $ mypbuilder push
 	$ git [branch|tag] patch-queue/${current_tag} patch-queue/master
+
+user    ALL = NOPASSWD: SETENV: /usr/sbin/cowbuilder

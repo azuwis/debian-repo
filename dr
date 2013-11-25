@@ -108,7 +108,7 @@ tmux_run() {
     err "Please run inside tmux session."
     exit 1
   fi
-  tmux split-window -d "$@; echo; read -p '#### finished ####' tmp"
+  tmux split-window -d "$@; read -p '#### finished ####' tmp"
   tmux select-layout even-vertical >& /dev/null
 }
 
@@ -252,7 +252,8 @@ reprepro_include() {
   version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
   for DIST in ${DISTS}; do
     for ARCH in ${ARCHS}; do
-      reprepro -b "$1" include ${DIST} "../build_${DIST}_${ARCH}/${source}_${version}${DIST}_${ARCH}.changes"
+      reprepro -b "$1" include ${DIST} \
+        "../build_${DIST}_${ARCH}/${source}_${version}${DIST}_${ARCH}.changes"
     done
   done
 }
