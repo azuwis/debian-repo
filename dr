@@ -40,19 +40,19 @@ OPTIONS:
   -S sid
 
 SUBCOMMAND:
-  create
-  update
-  login [--save-after-login]
-  build|gbp [src_dir ...]
-  post-build
-  repo
-  log [pattern]
-  commit
-  push
-  tag
-  watch list_file
-  staging
-  new-patch
+  c|create
+  u|update
+  l|login [--save-after-login]
+  d|download
+  np|new_patch
+  nc|new_change
+  b|build [src_dir ...]
+  s|staging
+  i|include
+  t|tag
+  it|include_tag
+  p|push
+  w|watch list_file
 EOF
   exit 1
 }
@@ -279,7 +279,7 @@ staging() {
   reprepro -b ${REPREPRO_STAGING_DIR} processincoming default
 }
 
-repo() {
+include() {
   for i in $DISTS
   do
     reprepro gensnapshot $i prev
@@ -295,12 +295,8 @@ tag() {
   git-buildpackage --git-ignore-new --git-tag-only
 }
 
-post-build() {
-  echo "+++ installing build results +++"
-  repo
-  echo "+++ git clean up +++"
-  clean
-  echo "+++ git taging +++"
+include_tag() {
+  include
   tag
 }
 
@@ -343,8 +339,24 @@ watch() {
 
 action="$1"
 case "$action" in
+  c) action=create ;;
+  u) action=update ;;
+  l) action=login ;;
+  d) action=download ;;
+  np) action=new_patch ;;
+  nc) action=new_change ;;
+  b) action=build ;;
+  s) action=staging ;;
+  i) action=include ;;
+  t) action=tag ;;
+  it) action=include_tag ;;
+  p) action=push ;;
+  w) action=watch ;;
+esac
+case "$action" in
 update|create|login)
-  ucl "$@"
+  shift
+  ucl $action "$@"
   ;;
 build)
   shift
