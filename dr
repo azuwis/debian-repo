@@ -69,8 +69,9 @@ if [ x"${REPO_BASE}" = x"CHANGEME" ]; then
 fi
 load_var COWBUILDER_BASE
 # reprepro
-REPREPRO_BASE_DIR="${REPO_BASE}/reprepro"
-REPREPRO_STAGING_DIR="${REPO_BASE}/reprepro-staging"
+REPREPRO_BASE_DIR="${REPO_BASE}/repo"
+export REPREPRO_BASE_DIR
+REPREPRO_STAGING_DIR="${REPO_BASE}/repo-staging"
 load_var BUILDRESULT
 # other
 DEFAULT_DISTS="squeeze wheezy"
