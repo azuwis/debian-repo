@@ -17,9 +17,10 @@ load_var() {
 # Init build host env
 init() {
   REPO_BASE="$(dirname $(readlink -f "$0"))"
-  sed -i -e "s#^REPO_BASE=.*#REPO_BASE=\"${REPO_BASE}\"#" ${REPO_BASE}/pbuilderrc
-  # let git ignore REPO_BASE line in pbuilderrc
   cd "${REPO_BASE}"
+  mkdir -p pbuilder
+  sed -i -e "s#^REPO_BASE=.*#REPO_BASE=\"${REPO_BASE}\"#" pbuilderrc
+  # let git ignore REPO_BASE line in pbuilderrc
   git config filter.stripvar.clean "perl -lpe 's/^(REPO_BASE)=(.*)/\$1=\"CHANGEME\"/'"
   mkdir -p ~/bin/
   : ln -s ${REPO_BASE}/dr ~/bin/
