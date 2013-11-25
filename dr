@@ -269,11 +269,16 @@ push() {
 }
 
 log() {
-  pattern="*.build"
-  if [ -n $1 ]; then
-    pattern="*${1}*.build"
-  fi
-  pager `ls -t $pattern ../$pattern | head -n1`
+  check_dir
+  local source
+  source=$(dpkg-parsechangelog | awk '/^Source: / {print $2}')
+  local version
+  version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
+  for DIST in ${DISTS}; do
+    for ARCH in ${ARCHS}; do
+      tmux_run "less ../build_${DIST}_${ARCH}/${source}_${version}_*.build"
+    done
+  done
 }
 
 watch() {
