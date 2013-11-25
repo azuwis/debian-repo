@@ -103,6 +103,10 @@ ARCHS=`echo $ARCHS | tr " " "\n" | sort | tr "\n" " "`
 
 # Run command in tmux panes, and pause after finish
 tmux_run() {
+  if [ x"$TMUX" = x ]; then
+    err "Please run inside tmux session."
+    exit 1
+  fi
   tmux split-window -d "$@; echo; read -p '#### finished ####' tmp"
   tmux select-layout even-vertical >& /dev/null
 }
