@@ -14,7 +14,7 @@ load_var() {
     eval $(grep "^$1" $file)
   fi
 }
-# Init build host env
+# init build host env
 init() {
   REPO_BASE="$(dirname $(readlink -f "$0"))"
   cd "${REPO_BASE}"
@@ -99,8 +99,8 @@ ARCHS=${ARCHS:-$DEFAULT_ARCHS}
 
 # Sort DISTS and ARCHS, workaround for reprepro missing *.orig.tar.gz when
 # processincoming
-DISTS=`echo $DISTS | tr " " "\n" | sort | tr "\n" " "`
-ARCHS=`echo $ARCHS | tr " " "\n" | sort | tr "\n" " "`
+DISTS=$(echo $DISTS | tr " " "\n" | sort | tr "\n" " ")
+ARCHS=$(echo $ARCHS | tr " " "\n" | sort | tr "\n" " ")
 
 # Run command in tmux panes, and pause after finish
 tmux_run() {
@@ -179,7 +179,7 @@ new_change() {
 new_patch() {
   gbp-pq export
   git checkout -- debian/patches/
-  num_patches=`cat debian/patches/series | wc -l`
+  num_patches=$(cat debian/patches/series | wc -l)
   pushd debian/patches >& /dev/null
   for i in *.patch; do
     if [[ ${i:0:4} =~ ^[0-9]+$ ]] && [ ${i:0:4} -gt $num_patches ]; then
@@ -326,21 +326,21 @@ watch() {
 
 action="$1"
 case "$action" in
-  c) action=create ;;
-  u) action=update ;;
-  l) action=login ;;
-  d) action=download ;;
+  c)  action=create ;;
+  u)  action=update ;;
+  l)  action=login ;;
+  d)  action=download ;;
   np) action=new_patch ;;
   nc) action=new_change ;;
-  b) action=build ;;
+  b)  action=build ;;
   ba) action=build_all ;;
-  s) action=staging ;;
-  i) action=include ;;
-  t) action=tag ;;
+  s)  action=staging ;;
+  i)  action=include ;;
+  t)  action=tag ;;
   it) action=include_tag ;;
-  p) action=push ;;
-  w) action=watch ;;
-  k) action=kill_pane ;;
+  p)  action=push ;;
+  w)  action=watch ;;
+  k)  action=kill_pane ;;
 esac
 case "$action" in
   update|create|login)
