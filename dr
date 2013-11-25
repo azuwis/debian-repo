@@ -228,54 +228,6 @@ build() {
   done
 }
 
-build_all() {
-  SOURCE=`dpkg-parsechangelog | awk '/^Source: / {print $2}'`
-  VERSION=`dpkg-parsechangelog | awk '/^Version: / {print $2}'`
-  jobidx=1
-  failed=0
-  pidlist=""
-  inc_orig="--debbuildopts -sa"
-  echo "+++ start building, see ../*.build for log +++"
-  for i in $DISTS
-  do
-    build_bin_only=""
-    for j in $ARCHS
-    do
-      echo "[$jobidx] building for $i $j"
-      PDEBUILD="pdebuild --logfile ../${SOURCE}_${VERSION}_${DATE}_${i}_${j}.build $inc_orig $build_bin_only"
-      if [ x"$action" = x"gbp" ]; then
-        DIST=$i ARCH=$j DEB_BUILD_OPTIONS="nocheck parallel=$((NCPU/2))" git-buildpackage --git-submodules --git-ignore-new --git-builder="$PDEBUILD" --git-cleaner='/bin/true' >&/dev/null &
-        pidlist="$pidlist $!"
-      else
-        DIST=$i ARCH=$j $PDEBUILD >&/dev/null &
-        pidlist="$pidlist $!"
-      fi
-      inc_orig=""
-      build_bin_only="-- --binary-arch"
-      let "jobidx+=1"
-      sleep 5
-    done
-  done
-
-  jobidx=1
-  for job in $pidlist
-  do
-    echo -n "waiting job [$jobidx]..."
-    if wait $job; then
-      echo "success"
-    else
-      let "failed+=1"
-      echo "failed"
-    fi
-    let "jobidx+=1"
-  done
-
-  if [ $failed -gt 0 ]; then
-    echo "$failed build(s) failed, please check build log"
-    return 1
-  fi
-}
-
 staging() {
   mkdir -p ${PBUILDER_RESULT_DIR}/staging
   cp ${PBUILDER_RESULT_DIR}/* ${PBUILDER_RESULT_DIR}/staging || true
