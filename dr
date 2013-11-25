@@ -22,9 +22,9 @@ init() {
   cd "${REPO_BASE}"
   git config filter.stripvar.clean "perl -lpe 's/^(REPO_BASE)=(.*)/\$1=\"CHANGEME\"/'"
   mkdir -p ~/bin/
-  ln -s ${REPO_BASE}/dr ~/bin/
-  ln -s ${REPO_BASE}/gbp.conf ~/.gbp.conf
-  ln -s ${REPO_BASE}/pbuilderrc ~/.pbuilderrc
+  : ln -s ${REPO_BASE}/dr ~/bin/
+  : ln -s ${REPO_BASE}/gbp.conf ~/.gbp.conf
+  : ln -s ${REPO_BASE}/pbuilderrc ~/.pbuilderrc
   sudo apt-get install git-buildpackage cowbuilder reprepro bsd-mailx sudo tmux
 }
 usage() {
