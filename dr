@@ -14,6 +14,19 @@ load_var() {
     eval $(grep "^$1" $file)
   fi
 }
+# Init build host env
+init() {
+  REPO_BASE="$(dirname $(readlink -f "$0"))"
+  sed -i -e "s#^REPO_BASE=.*#REPO_BASE=\"${REPO_BASE}\"#" ${REPO_BASE}/pbuilderrc
+  # let git ignore REPO_BASE line in pbuilderrc
+  cd "${REPO_BASE}"
+  git config filter.stripvar.clean "perl -lpe 's/^(REPO_BASE)=(.*)/\$1=\"CHANGEME\"/'"
+  mkdir -p ~/bin/
+  ln -s ${REPO_BASE}/dr ~/bin/
+  ln -s ${REPO_BASE}/gbp.conf ~/.gbp.conf
+  ln -s ${REPO_BASE}/pbuilderrc ~/.pbuilderrc
+  sudo apt-get install git-buildpackage cowbuilder reprepro bsd-mailx sudo tmux
+}
 usage() {
   cat <<EOF
 USAGE: $0 [-haiswS] subcommand
@@ -99,15 +112,6 @@ check_dir() {
     err "Please run inside debian source dir."
     exit 1
   fi
-}
-
-# Init build host env
-prepare() {
-  mkdir -p ~/bin/
-  ln -s ${REPO_BASE}/dr ~/bin/
-  ln -s ${REPO_BASE}/gbp.conf ~/.gbp.conf
-  ln -s ${REPO_BASE}/pbuilderrc ~/.pbuilderrc
-  sudo apt-get install git-buildpackage cowbuilder reprepro bsd-mailx sudo tmux
 }
 
 # Update/create/login
