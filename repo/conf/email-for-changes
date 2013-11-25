@@ -2,4 +2,12 @@
 to=sysadmin@hz.netease.com
 changes=${5##*/}
 package=${changes%.*}
-mail -s "$1: $package added to $2" $to < $5
+if echo $REPREPRO_BASE_DIR | grep -qs 'staging/$'; then
+  repo="repo-staging"
+else
+  repo="repo"
+fi
+title="[$repo] $package added to $2"
+mail -s "$title" $to < $5
+#echo "$title" $to
+#cat $5
