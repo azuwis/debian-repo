@@ -35,6 +35,7 @@ USAGE: $(basename $0) [-hswjSai] subcommand [options ...]
 
 OPTIONS:
   -h | help
+  -l | lenny
   -s | squeeze
   -w | wheezy
   -j | jessie
@@ -85,8 +86,9 @@ load_var DEFAULT_ARCHS
 DISTS=""
 ARCHS=""
 OPTIND=1
-while getopts "haiswS" opt; do
+while getopts "hlaiswS" opt; do
   case "$opt" in
+    l) DISTS="$DISTS lenny" ;;
     s) DISTS="$DISTS squeeze" ;;
     w) DISTS="$DISTS wheezy" ;;
     j) DISTS="$DISTS jessie" ;;
