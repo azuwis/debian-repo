@@ -78,8 +78,8 @@ load_var COWBUILDER_BASE
 REPREPRO_BASE_DIR="${REPO_BASE}/repo"
 REPREPRO_STAGING_DIR="${REPO_BASE}/repo-staging"
 # other
-DEFAULT_DISTS="squeeze wheezy"
-DEFAULT_ARCHS="amd64 i386"
+load_var DEFAULT_DISTS
+load_var DEFAULT_ARCHS
 
 # Options
 DISTS=""
