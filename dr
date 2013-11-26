@@ -31,32 +31,36 @@ init() {
 }
 usage() {
   cat <<EOF
-USAGE: $0 [-haiswS] subcommand
+USAGE: $(basename $0) [-hswjSai] subcommand [options ...]
 
 OPTIONS:
-  -h help
-  -s squeeze
-  -w wheezy
-  -j jessie
-  -S sid
-  -a amd64
-  -i i386
+  -h | help
+  -s | squeeze
+  -w | wheezy
+  -j | jessie
+  -S | sid
+  -a | amd64
+  -i | i386
 
 SUBCOMMANDS:
-  c|create
-  u|update
-  l|login [--save-after-login]
-  d|download
-  np|new_patch
-  nc|new_change
-  b|build [<debuild-options>]
-  ba|build_all [src_dir ...]
-  s|staging
-  i|include
-  t|tag
-  it|include_tag
-  p|push
-  w|watch list_file
+  c|create                     | create build chroot env at ${COWBUILDER_BASE}
+  u|update                     | update build chroot env
+  l|login [--save-after-login] | login into build chroot env
+  d|download                   | download and import debian source package
+  np|new_patch                 | run after git commit at patch-queue/* branch
+  nc|new_change                | create new changelog stanza
+  b|build [<debuild-options>]  | run inside debian source dir
+  ba|build_all [src_dir ...]   | build for every src_dir
+  s|staging                    | include built deb in ${REPREPRO_STAGING_DIR}
+  i|include                    | include built deb in ${REPREPRO_BASE_DIR}
+  t|tag                        | run after all done for this package version
+  it|include_tag               | include and tag
+  p|push                       | push to git remote
+  w|watch list_file            | watch for upstream version
+  r|repo <action> [-s]         | reprepro wrapper, -s for repo-staging
+
+default dists: ${DEFAULT_DISTS}
+default archs: ${DEFAULT_ARCHS}
 EOF
   exit 1
 }
