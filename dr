@@ -51,13 +51,13 @@ SUBCOMMANDS:
   nc|new_change                | create new changelog stanza
   b|build [<debuild-options>]  | run inside debian source dir
   ba|build_all [src_dir ...]   | build for every src_dir
-  s|staging                    | include built deb in ${REPREPRO_STAGING_DIR}
-  i|include                    | include built deb in ${REPREPRO_BASE_DIR}
-  t|tag                        | run after all done for this package version
+  s|staging                    | include built deb in main repo(${REPREPRO_STAGING_DIR})
+  i|include                    | include built deb in staging repo(${REPREPRO_BASE_DIR})
+  t|tag                        | create git tag for current package version
   it|include_tag               | include and tag
   p|push                       | push to git remote
   w|watch list_file            | watch for upstream version
-  r|repo <action> [-s]         | reprepro wrapper, -s for repo-staging
+  r|repo <action> [-s]         | reprepro wrapper, -s for staging repo
 
 default dists: ${DEFAULT_DISTS}
 default archs: ${DEFAULT_ARCHS}
