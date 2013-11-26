@@ -261,18 +261,14 @@ reprepro_include() {
 }
 
 staging() {
-  reprepro_include "${REPREPRO_STAGING_DIR}"
+  repo include_all -s
 }
 
 include() {
   DATE=$(date +%Y-%m%d-%H%M%S)
-  for i in $DISTS; do
-    reprepro gensnapshot $i prev
-  done
-  reprepro_include "${REPREPRO_BASE_DIR}"
-  for i in $DISTS; do
-    reprepro gensnapshot $i $DATE
-  done
+  repo gensnapshot prev
+  repo include_all
+  repo gensnapshot $DATE
 }
 
 tag() {
@@ -287,6 +283,35 @@ include_tag() {
 push() {
   git push
   git push --tags
+}
+
+repo() {
+  local action="$1"
+  shift
+  local base
+  if [ x"$1" = x"-s" ]; then
+    shift
+    base="${REPREPRO_STAGING_DIR}"
+  else
+    base="${REPREPRO_BASE_DIR}"
+  fi
+  if [ x"$action" = x"include_all" ]; then
+    check_dir
+    local source
+    source=$(dpkg-parsechangelog | awk '/^Source: / {print $2}')
+    local version
+    version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
+  fi
+  for DIST in ${DISTS}; do
+    if [ x"$action" = x"include_all" ]; then
+      for ARCH in ${ARCHS}; do
+        reprepro -b "$base" include ${DIST} \
+          "../build_${DIST}_${ARCH}/${source}_${version}${DIST}_${ARCH}.changes"
+      done
+    else
+      reprepro -b "$base" "$action" ${DIST} "$@"
+    fi
+  done
 }
 
 log() {
@@ -343,11 +368,16 @@ case "$action" in
   p)  action=push ;;
   w)  action=watch ;;
   k)  action=kill_pane ;;
+  r)  action=repo ;;
 esac
 case "$action" in
   update|create|login)
     shift
     ucl $action "$@"
+    ;;
+  list|includedeb|remove|removesrc)
+    shift
+    repo $action "$@"
     ;;
   *)
     if [ x$(type -t $action) == x"function" ]; then
