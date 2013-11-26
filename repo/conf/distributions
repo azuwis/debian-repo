@@ -49,3 +49,16 @@ Tracking: all includechanges
 SignWith: yes
 Log: squeeze.log
  --changes email-for-changes
+
+Codename: lenny
+Suite: oldoldstable
+Components: main contrib non-free
+Architectures: i386 amd64 source
+Origin: Netease
+Label: Netease
+Version: 1.0
+Description: Custom debian lenny repo for NetEase
+Tracking: all includechanges
+SignWith: yes
+Log: lenny.log
+ --changes email-for-changes
