@@ -340,7 +340,7 @@ watch() {
   fi
   cat $watch_list | grep -v '^#' | while read debian_source local_dist debian_dist
   do
-    local_version=`reprepro -b {REPREPRO_BASE_DIR} --list-format '${version}' listfilter $local_dist '$Source (== '$debian_source'), $Architecture (==source)'`
+    local_version=`reprepro -b ${REPREPRO_BASE_DIR} --list-format '${version}' listfilter $local_dist '$Source (== '$debian_source'), $Architecture (==source)'`
     if [ x"$debian_dist" = x"" ]; then
       debian_dist=$local_dist
     fi
