@@ -35,13 +35,14 @@ USAGE: $0 [-haiswS] subcommand
 
 OPTIONS:
   -h help
-  -a amd64
-  -i i386
   -s squeeze
   -w wheezy
+  -j jessie
   -S sid
+  -a amd64
+  -i i386
 
-SUBCOMMAND:
+SUBCOMMANDS:
   c|create
   u|update
   l|login [--save-after-login]
@@ -82,12 +83,13 @@ ARCHS=""
 OPTIND=1
 while getopts "haiswS" opt; do
   case "$opt" in
-    h) usage ;;
-    a) ARCHS="$ARCHS amd64" ;;
-    i) ARCHS="$ARCHS i386" ;;
     s) DISTS="$DISTS squeeze" ;;
     w) DISTS="$DISTS wheezy" ;;
+    j) DISTS="$DISTS jessie" ;;
     S) DISTS="$DISTS sid" ;;
+    a) ARCHS="$ARCHS amd64" ;;
+    i) ARCHS="$ARCHS i386" ;;
+    h) usage ;;
     *) usage ;;
   esac
 done
