@@ -366,9 +366,9 @@ jpkg() {
   if [ $(echo ${DISTS} | wc -w) -eq 1 ]; then
     DIST=$(echo ${DISTS} | tr -d ' ')
   fi
-  if echo ${jdk} | grep -Eqs 'x64\.bin$'; then
+  if echo ${jdk} | grep -qs 'x64'; then
     ARCH=amd64
-  elif echo ${jdk} | grep -Eqs 'i[3456]86\.bin$'; then
+  elif echo ${jdk} | grep -qs 'i[3456]86'; then
     ARCH=i386
   elif [ $(echo ${ARCHS} | wc -w) -eq 1 ]; then
     ARCH=$(echo ${ARCHS} | tr -d ' ')
