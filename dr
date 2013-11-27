@@ -58,6 +58,7 @@ SUBCOMMANDS:
   t|tag                        | create git tag for current package version
   it|include_tag               | include and tag
   p|push                       | push to git remote
+  cl|clean                        | remove built files
   w|watch list_file            | watch for upstream version
   r|repo <action> [-s]         | reprepro wrapper, -s for staging repo
   jpkg <jdk.bin>               | use make-jpkg to build jdk.deb inside chroot env
@@ -206,18 +207,6 @@ new_patch() {
   git clean -f
 }
 
-clean() {
-  check_dir
-  if [ $(git status --porcelain | wc -l) -eq 0 ]; then 
-    return
-  fi
-  if [ x"$1" == x"ask" ]; then
-    git status --porcelain
-    read -p "Clear git working tree?(Ctrl-C to cancel)" tmp
-  fi
-  git reset --hard HEAD && git clean -df
-}
-
 # Build
 build() {
   check_dir
@@ -292,6 +281,15 @@ include_tag() {
 push() {
   git push
   git push --tags
+}
+
+clean() {
+  check_dir
+  for DIST in ${DISTS}; do
+    for ARCH in ${ARCHS}; do
+      rm -vr "../build_${DIST}_${ARCH}/"
+    done
+  done
 }
 
 repo() {
@@ -398,6 +396,7 @@ case "$action" in
   t)  action=tag ;;
   it) action=include_tag ;;
   p)  action=push ;;
+  cl) action=clean ;;
   w)  action=watch ;;
   k)  action=kill_pane ;;
   r)  action=repo ;;
