@@ -118,7 +118,8 @@ tmux_run() {
     err "Please run inside tmux session."
     exit 1
   fi
-  tmux split-window -d "$@; read -p '#### finished ####' tmp"
+  tmux split-window -d \
+    "$@; read -p '#### finished, press any key to exit ####' tmp"
   tmux select-layout even-vertical >& /dev/null
 }
 
