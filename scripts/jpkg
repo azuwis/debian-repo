@@ -1,0 +1,11 @@
+#!/bin/bash
+jdk=$1
+result=$2
+mkdir /tmp/buildd/build
+chown nobody\: /tmp/buildd/build
+apt-get install -y java-package
+su -c "
+cd /tmp/buildd/build
+yes | make-jpkg --changes ../${jdk}
+" - nobody
+cp /tmp/buildd/build/* "${result}/"
