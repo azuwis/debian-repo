@@ -1,13 +1,19 @@
 #!/bin/bash
+dist=$2
 to=sysadmin@hz.netease.com
 changes=${5##*/}
 package=${changes%.*}
+mirror=$(awk '/^OTHERMIRROR/ {print $2}' ~/.pbuilderrc)
 if echo $REPREPRO_BASE_DIR | grep -Eqs 'staging/?$'; then
   repo="repo-staging"
+  mirror="${mirror}-staging"
 else
   repo="repo"
 fi
-title="[$repo] $package added to $2"
-mail -s "$title" $to < $5
-#echo "$title" $to
-#cat $5
+title="[$repo] $package added to $dist"
+(cat <<EOF
+deb ${mirror} ${dist} main contrib non-free
+
+EOF
+cat $5) | \
+mail -s "$title" $to
