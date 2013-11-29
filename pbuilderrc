@@ -17,12 +17,3 @@ EXTRAPACKAGES="fakeroot lsb-release devscripts lintian screen vim less"
 
 CCACHEDIR=""
 HOOKDIR="${REPO_BASE}/hooks"
-
-# Include .orig.tar.gz in .changes file
-#DEBBUILDOPTS="-sa"
-
-# Old pbuilder does not ignore .git by default
-DEBBUILDOPTS="-i'\.git' -I.git"
-
-DEBEMAIL="azuwis@gmail.com"
-DEBFULLNAME="Zhong Jianxin"
