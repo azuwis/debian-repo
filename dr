@@ -381,6 +381,20 @@ jpkg() {
     -- ${REPO_BASE}/scripts/jpkg "${jdk}" "${build_dir}"
 }
 
+test() {
+  pwd="$(pwd)"
+  mount_dir="${pwd}/.."
+  for DIST in ${DISTS}; do
+    for ARCH in ${ARCHS}; do
+      tmux_run "sudo cowbuilder --dist ${DIST} --architecture ${ARCH} \
+        --execute --configfile ~/.pbuilderrc \
+        --basepath ${COWBUILDER_BASE}/base-${DIST}-${ARCH}.cow \
+        --bindmount ${mount_dir} \
+        -- ${REPO_BASE}/scripts/test ${pwd}"
+    done
+  done
+}
+
 action="$1"
 case "$action" in
   c)  action=create ;;

@@ -1,0 +1,4 @@
+#!/bin/bash
+export debian_chroot="pbuilder"
+cd "$1"
+TERM=rxvt screen </dev/tty > /dev/tty 2> /dev/tty
