@@ -56,8 +56,8 @@ SUBCOMMANDS:
   s|staging                    | include built deb in main repo(${REPREPRO_STAGING_DIR})
   i|include                    | include built deb in staging repo(${REPREPRO_BASE_DIR})
   t|tag                        | create git tag for current package version
-  it|include_tag               | include and tag
   p|push                       | push to git remote
+  f|finish                     | include and push
   cl|clean                        | remove built files
   w|watch list_file            | watch for upstream version
   r|repo <action> [-s]         | reprepro wrapper, -s for staging repo
@@ -211,8 +211,8 @@ build() {
     err "Architecture: all, build only once per DIST."
     ARCHS=$(echo ${ARCHS} | awk '{print $1}')
   fi
-  # include orig source for the first build
-  source_type="-sa"
+  # include orig source for the first build, and tag it after success
+  source_type="--git-tag --git-retag -sa"
   for DIST in ${DISTS}; do
     # full build for the first ARCH in every DISTS, rest is binary-only build
     build_type="-F"
@@ -265,17 +265,17 @@ include() {
 }
 
 tag() {
-  git-buildpackage --git-ignore-new --git-tag-only
-}
-
-include_tag() {
-  include
-  tag
+  git-buildpackage --git-tag-only --git-retag "$@"
 }
 
 push() {
   git push
   git push --tags
+}
+
+finish() {
+  include
+  push
 }
 
 clean() {
@@ -403,8 +403,8 @@ case "$action" in
   s)  action=staging ;;
   i)  action=include ;;
   t)  action=tag ;;
-  it) action=include_tag ;;
   p)  action=push ;;
+  f)  action=finish ;;
   cl) action=clean ;;
   w)  action=watch ;;
   k)  action=kill_pane ;;
