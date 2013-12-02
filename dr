@@ -115,7 +115,7 @@ tmux_run() {
     exit 1
   fi
   tmux split-window -d \
-    "$@; read -p '#### finished, press any key to exit ####' tmp"
+    "$@; echo '#### finished, press any key to exit ####'; read tmp"
   tmux select-layout even-vertical >& /dev/null
 }
 
