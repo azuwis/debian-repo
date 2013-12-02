@@ -164,24 +164,6 @@ download() {
   git-import-dsc --download "$@"
 }
 
-# New changelog
-new_change() {
-  check_dir
-  branch=$(git rev-parse --abbrev-ref HEAD)
-  # set default string appended to $version
-  if [ x"$branch" = x"master" ]; then
-    branch="build"
-  fi
-  version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
-  if echo ${version} | grep -q "${branch}[0-9]*$"; then
-    git-dch --release
-  else
-    git-dch --release --new-version="${version}+${branch}1"
-  fi
-  version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
-  git add debian/changelog && git commit -m "debian/changelog: $version"
-}
-
 # New patch
 new_patch() {
   gbp-pq export
@@ -200,6 +182,24 @@ new_patch() {
   done
   popd >& /dev/null
   git clean -f
+}
+
+# New changelog
+new_change() {
+  check_dir
+  branch=$(git rev-parse --abbrev-ref HEAD)
+  # set default string appended to $version
+  if [ x"$branch" = x"master" ]; then
+    branch="build"
+  fi
+  version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
+  if echo ${version} | grep -q "${branch}[0-9]*$"; then
+    git-dch --release
+  else
+    git-dch --release --new-version="${version}+${branch}1"
+  fi
+  version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
+  git add debian/changelog && git commit -m "debian/changelog: $version"
 }
 
 # Build
