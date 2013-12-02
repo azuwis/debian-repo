@@ -1,60 +1,60 @@
-* Install these deb packages:
+== Initialize
 
-	pbuilder reprepro devscripts debhelper bsd-mailx fakeroot sudo
+First step
 
-* link ./pbuilder.sh to /usr/local/bin:
+    $ git clone https://github.com/azuwis/debian-repo.git debian
+    $ cd debian
+    $ ./dr
 
-	link -s /path/to/pbuilder.sh /usr/local/bin/mypbuilder
+Have a look at ./pbuilderrc, edit accordingly:
 
-* Have a look at these files, edit them accordingly:
+    DEFAULT_DISTS="squeeze wheezy"
+    DEFAULT_ARCHS="amd64 i386"
+    MIRRORSITE="http://<main-debian-mirror>/debian"
+    OTHERMIRROR="deb http://<your-custom-debian-repo>/debian ${DIST} main contrib non-free"
 
-	/etc/pbuilderrc
+Initialize chroot environment:
 
-* Edit ./pbuilder.sh, change DISTS and ARCHS to what you want to build against. Initialize chroot environment:
+    $ dr create
 
-	$ mypbuilder create
+== Sudoers
 
-* Get debian source package and unpack:
+    username    ALL = NOPASSWD: SETENV: /usr/sbin/cowbuilder
 
-	$ apt-get source package_name
+== Building
+
+Get debian source package and unpack:
+
+    $ dr download package_name
+
 or
 
-	$ dget uri://to/*.dsc
-	$ dpkg-souce -x *.dsc
+    $ dr download http://ftp.us.debian.org/.../package.dsc
 
-* Building debs from a unpacked debian source:
+Build single source package:
 
-	$ cd package_source_dir
-	$ mypbuilder build
+    $ dr build
 
-If you use git-buildpackage, run:
+Build multiple source packages:
 
-	$ mypbuilder gbp
+    $ dr build_all path/to/source1 path/to/source2 ...
 
-You can also use this to build multiple sources:
+Build results can be found at ../build_*.
 
-	$ mypbuilder [build|gbp] /path/to/source1 /path/to/source2 ...
+Update should be applied periodically using:
 
-Build results can be found at BUILDRESULT, see /etc/pbuilderrc
+    $ dr update
 
-* Update should be applied periodically using:
+== Workflow
 
-	$ mypbuilder update
-
-* Workflow using git-buildpackage
-
-	$ git-import-dsc [--download [http://*.dsc|package] | *.dsc ]
-	$ gbp-pq import
-	... apply patch
-	$ git add && git commit -m 'patch name'
-	$ git checkout master
-	$ gbp-pq export
-	$ mypbuilder new-patch
-	$ git dch -R
-	$ mypbuilder commit
-	$ mypbuilder gbp
-	$ mypbuilder post-build
-        $ mypbuilder push
-	$ git [branch|tag] patch-queue/${current_tag} patch-queue/master
-
-user    ALL = NOPASSWD: SETENV: /usr/sbin/cowbuilder
+    $ dr download package_name
+    $ git checkout -b branch_name
+    $ gbp-pq import
+    ... apply patch
+    $ git add . && git commit
+    $ dr new_patch
+    $ dr new_changelog
+    $ dr build
+    $ dr include_tag
+    $ dr push
+    $ git tag patch-queue/${current_tag} patch-queue/master
