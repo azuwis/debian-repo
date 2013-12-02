@@ -23,9 +23,9 @@ init() {
   # let git ignore REPO_BASE line in pbuilderrc
   git config filter.stripvar.clean "perl -lpe 's/^(REPO_BASE)=(.*)/\$1=\"CHANGEME\"/'"
   mkdir -p ~/bin/
-  : ln -s ${REPO_BASE}/dr ~/bin/
-  : ln -s ${REPO_BASE}/gbp.conf ~/.gbp.conf
-  : ln -s ${REPO_BASE}/pbuilderrc ~/.pbuilderrc
+  ln -svi ${REPO_BASE}/dr ~/bin/
+  ln -svi ${REPO_BASE}/gbp.conf ~/.gbp.conf
+  ln -svi ${REPO_BASE}/pbuilderrc ~/.pbuilderrc
   sudo apt-get install git-buildpackage cowbuilder reprepro bsd-mailx sudo \
     fakeroot tmux
 }
@@ -72,11 +72,6 @@ EOF
 # Global settings
 # git-pbuilder
 load_var REPO_BASE
-if [ x"${REPO_BASE}" = x"CHANGEME" ]; then
-  err "REPO_BASE in pbuilderrc not changed, running init."
-  init
-  exit $?
-fi
 load_var COWBUILDER_BASE
 # reprepro
 REPREPRO_BASE_DIR="${REPO_BASE}/repo"

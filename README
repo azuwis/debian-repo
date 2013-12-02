@@ -4,7 +4,7 @@ First step
 
     $ git clone https://github.com/azuwis/debian-repo.git debian
     $ cd debian
-    $ ./dr
+    $ ./dr init
 
 Have a look at ./pbuilderrc, edit accordingly:
 
