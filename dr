@@ -242,8 +242,8 @@ build() {
     err "Architecture: all, build only once per DIST."
     ARCHS=$(echo ${ARCHS} | awk '{print $1}')
   fi
-  # include orig source for the first build, and tag it after success
-  source_type="--git-tag --git-retag -sa"
+  # include orig source for the first build
+  source_type="-sa"
   for DIST in ${DISTS}; do
     # full build for the first ARCH in every DISTS, rest is binary-only build
     build_type="-F"
