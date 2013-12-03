@@ -47,7 +47,7 @@ SUBCOMMANDS:
   c|create                     | create build chroot env at ${COWBUILDER_BASE}
   u|update                     | update build chroot env
   l|login [--save-after-login] | login into build chroot env
-  d|download                   | download and import debian source package
+  d|download <pkg>|uri://*.dsc | download and import debian source package
   np|new_patch                 | run after git commit at patch-queue/* branch
   nc|new_change                | create new changelog stanza
   b|build [<debuild-options>]  | run inside debian source dir
@@ -58,7 +58,7 @@ SUBCOMMANDS:
   t|tag                        | create git tag for current package version
   p|push                       | push to git remote
   f|finish                     | include and push
-  cl|clean                        | remove built files
+  cl|clean                     | remove built files
   w|watch list_file            | watch for upstream version
   r|repo <action> [-s]         | reprepro wrapper, -s for staging repo
   jpkg <jdk.bin>               | use make-jpkg to build jdk.deb inside chroot env
