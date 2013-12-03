@@ -49,6 +49,7 @@ SUBCOMMANDS:
   l|login [--save-after-login] | login into build chroot env
   d|download <pkg>|uri://*.dsc | download and import debian source package
   np|new_patch                 | run after git commit at patch-queue/* branch
+  ap|amend_patch               | amend the latest patch in queue
   nc|new_change                | create new changelog stanza
   b|build [<debuild-options>]  | run inside debian source dir
   ba|build_all [src_dir ...]   | build for every src_dir
@@ -188,6 +189,21 @@ new_patch() {
     done
     popd >& /dev/null
     git clean --force
+  else
+    refresh_patch
+  fi
+}
+
+# Amend patch
+amend_patch() {
+  if git rev-parse --abbrev-ref HEAD | grep -q '^patch-queue/'; then
+    git commit --verbose --amend --no-edit
+    gbp-pq export
+    patch=$(cat debian/patches/series | wc -l)
+    git add debian/patches/$(printf '%04d' "$patch")-*
+    git checkout -- debian/patches/
+    git clean --force
+    git commit --verbose --amend --no-edit
   else
     refresh_patch
   fi
@@ -406,6 +422,7 @@ case "$action" in
   l)  action=login ;;
   d)  action=download ;;
   np) action=new_patch ;;
+  ap) action=amend_patch ;;
   nc) action=new_change ;;
   b)  action=build ;;
   ba) action=build_all ;;
