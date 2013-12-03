@@ -215,13 +215,15 @@ new_change() {
   branch=$(git rev-parse --abbrev-ref HEAD)
   # set default string appended to $version
   if [ x"$branch" = x"master" ]; then
-    branch="build"
+    append="build"
+  else
+    append="$branch"
   fi
   version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
-  if echo ${version} | grep -q "${branch}[0-9]*$"; then
+  if echo ${version} | grep -q "${append}[0-9]*$"; then
     git-dch --release
   else
-    git-dch --release --new-version="${version}+${branch}1"
+    git-dch --release --new-version="${version}+${append}1"
   fi
   version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
   git add debian/changelog && git commit -m "debian/changelog: $version"
