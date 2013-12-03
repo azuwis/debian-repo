@@ -164,24 +164,33 @@ download() {
   git-import-dsc --download "$@"
 }
 
+refresh_patch() {
+  gbp-pq drop
+  gbp-pq import
+}
+
 # New patch
 new_patch() {
-  gbp-pq export
-  git checkout -- debian/patches/
-  num_patches=$(cat debian/patches/series | wc -l)
-  pushd debian/patches >& /dev/null
-  for i in *.patch; do
-    if [[ ${i:0:4} =~ ^[0-9]+$ ]] && [ ${i:0:4} -gt $num_patches ]; then
-      git add $i
-      echo $i >> series
-      git add series
-      tmp=${i:5}
-      msg=${tmp/%.patch/}
-      git commit -m "debian/patches/: $msg"
-    fi
-  done
-  popd >& /dev/null
-  git clean -f
+  if git rev-parse --abbrev-ref HEAD | grep -q '^patch-queue/'; then
+    gbp-pq export
+    git checkout -- debian/patches/
+    num_patches=$(cat debian/patches/series | wc -l)
+    pushd debian/patches >& /dev/null
+    for i in *.patch; do
+      if [[ ${i:0:4} =~ ^[0-9]+$ ]] && [ ${i:0:4} -gt $num_patches ]; then
+        git add $i
+        echo $i >> series
+        git add series
+        tmp=${i:5}
+        msg=${tmp/%.patch/}
+        git commit -m "debian/patches/: $msg"
+      fi
+    done
+    popd >& /dev/null
+    git clean --force
+  else
+    refresh_patch
+  fi
 }
 
 # New changelog
