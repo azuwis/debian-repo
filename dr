@@ -52,7 +52,7 @@ SUBCOMMANDS:
   ap|amend_patch               | amend the latest patch in queue
   nc|new_change                | create new changelog stanza
   b|build [<debuild-options>]  | run inside debian source dir
-  ba|build_all [src_dir ...]   | build for every src_dir
+  ba|build_all [<src_dir> ...] | build for every src_dir
   k|kill_pane                  | kill other tmux panes
   s|staging                    | include built deb in main repo(${REPREPRO_STAGING_DIR})
   i|include                    | include built deb in staging repo(${REPREPRO_BASE_DIR})
