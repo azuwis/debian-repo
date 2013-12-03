@@ -314,6 +314,7 @@ push() {
 
 finish() {
   include
+  tag
   push
 }
 
