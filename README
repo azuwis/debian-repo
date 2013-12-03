@@ -49,12 +49,12 @@ Update should be applied periodically using:
 
     $ dr download package_name
     $ git checkout -b branch_name
-    $ gbp-pq import
+    $ dr new_patch
     ... apply patch
     $ git add . && git commit
     $ dr new_patch
     $ dr new_changelog
     $ dr build
-    $ dr include_tag
-    $ dr push
-    $ git tag patch-queue/${current_tag} patch-queue/master
+    $ dr staging
+    ... test the package in repo-staging
+    $ dr finish
