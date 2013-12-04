@@ -441,6 +441,20 @@ sandbox() {
   execute sandbox
 }
 
+# kpkg <linux-source.deb> <arch> [<version-append>] [<revision-append>]
+kpkg() {
+  deb=$1
+  version_append=$3
+  input="${REPO_BASE}/scripts/kpkg-${version_append}"
+  if [ -f "$input" ]; then
+    input_param="-i $input"
+  fi
+  if [ ! -f "$deb" ]; then
+    wget http://ftp.us.debian.org/debian/pool/main/l/linux/${deb}
+  fi
+  execute $input_param kpkg "$@"
+}
+
 action="$1"
 case "$action" in
   c)  action=create ;;

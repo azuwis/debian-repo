@@ -1,0 +1,40 @@
+#!/bin/bash
+set -x
+export debian_chroot="pbuilder"
+
+pwd=$1
+shift
+cd "$pwd"
+
+deb=$1
+arch=$2
+version_append=$3
+revision_append=$4
+source=$(echo $deb | awk -F_ '{print $1}')
+version=$(echo $deb | awk -F_ '{print $2}')
+ncpu=$(grep -c '^processor' /proc/cpuinfo)
+
+apt-get install -y kernel-package bc cpio libncurses-dev
+dpkg -i $deb
+
+cd ..
+tar xf /usr/src/${source}.tar.*
+cd ${source}
+xzcat /usr/src/${source/source/config}/config.${arch}_none_${arch}.xz > .config
+
+conf_script="/tmp/buildd/kpkg-${version_append}"
+if [ -f "$conf_script" ]; then
+  bash -x "$conf_script"
+fi
+
+cat <<EOF >build.sh
+export KPKG_MAINTAINER="Zhong Jianxin"
+export KPKG_EMAIL="azuwis@gmail.com"
+export DELETE_BUILD_LINK=YES
+#export KPKG_FOLLOW_SYMLINKS_IN_SRC=YES
+# TODO handle if $version_append is empty
+#fakeroot make-kpkg --jobs ${ncpu} --initrd --revision ${version}${revision_append} --append_to_version -${version_append}-${arch} binary-arch
+fakeroot make-kpkg --jobs ${ncpu} --initrd --revision ${version}${revision_append} --append_to_version -${version_append}-${arch} kernel_image kernel_headers
+EOF
+chmod +x build.sh
+bash -x ./build.sh
