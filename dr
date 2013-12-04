@@ -416,7 +416,14 @@ jpkg() {
     -- ${REPO_BASE}/scripts/jpkg "${jdk}" "${build_dir}"
 }
 
-test() {
+# execute [-i <input_file>] <cmd> [<options>]
+execute() {
+  if [ x"$1" = x"-i" ]; then
+    input="--inputfile $2"
+    shift 2
+  fi
+  cmd=$1
+  shift
   pwd="$(pwd)"
   mount_dir="${pwd}/.."
   for DIST in ${DISTS}; do
@@ -424,10 +431,14 @@ test() {
       tmux_run "sudo cowbuilder --dist ${DIST} --architecture ${ARCH} \
         --execute --configfile ~/.pbuilderrc \
         --basepath ${COWBUILDER_BASE}/base-${DIST}-${ARCH}.cow \
-        --bindmount ${mount_dir} \
-        -- ${REPO_BASE}/scripts/test ${pwd}"
+        --bindmount ${mount_dir} $input \
+        -- ${REPO_BASE}/scripts/${cmd} ${pwd} $*"
     done
   done
+}
+
+sandbox() {
+  execute sandbox
 }
 
 action="$1"
