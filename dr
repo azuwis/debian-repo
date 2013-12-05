@@ -298,12 +298,14 @@ include() {
 tag() {
   check_dir
   git-buildpackage --git-tag-only "$@"
-  num_patches=$(cat debian/patches/series | wc -l)
   branch=$(git rev-parse --abbrev-ref HEAD)
-  num_gitlog=$(git log --oneline ${branch}..patch-queue/${branch} | wc -l)
-  if [ $num_patches -eq $num_gitlog ]; then
-    version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
-    git tag "patch-queue/${version}" "patch-queue/${branch}"
+  if git branch | grep -q "patch-queue/${branch}"; then
+    num_patches=$(cat debian/patches/series | wc -l)
+    num_gitlog=$(git log --oneline ${branch}..patch-queue/${branch} | wc -l)
+    if [ $num_patches -eq $num_gitlog ]; then
+      version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
+      git tag "patch-queue/${version}" "patch-queue/${branch}"
+    fi
   fi
 }
 
