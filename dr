@@ -370,20 +370,30 @@ log() {
 }
 
 watch() {
-  # source_pkg_name local_dist debian_dist
+  # source_pkg_name local_dist debian_dist ignored_versions
   if [ x"$1" = x"" ]; then
     usage
   else
     watch_list=$1
   fi
-  cat $watch_list | grep -v '^#' | while read debian_source local_dist debian_dist
+  cat $watch_list | grep -v '^#' | while read debian_source local_dist debian_dist ignored_versions
   do
     local_version=`reprepro -b ${REPREPRO_BASE_DIR} --list-format '${version}' listfilter $local_dist '$Source (== '$debian_source'), $Architecture (==source)'`
-    if [ x"$debian_dist" = x"" ]; then
+    if [ x"$debian_dist" = x"" -o x"$debian_dist" = x"-" ]; then
       debian_dist=$local_dist
     fi
     debian_version=`curl -s http://packages.debian.org/source/${debian_dist}/${debian_source} | grep "Source Package: ${debian_source}" | awk -F'(\(|\))' '{print $2}'`
     if [ x"$debian_version" != x"" ]; then
+      ignore=false
+      for i in ignored_versions; do
+        if [ x"$debian_version" = x"$ignored_versions" ]; then
+            ignore=true
+            break
+        fi
+      done
+      if [ x"$ignore" = x"true" ]; then
+          continue
+      fi
       if dpkg --compare-versions "$debian_version" gt "$local_version" || [ x"$DEBUG" != x"" ]; then
         echo "${debian_source}: debian(${debian_dist} ${debian_version}) local(${local_dist} ${local_version})"
       fi
