@@ -464,6 +464,11 @@ kpkg() {
   if [ ! -f "$deb" ]; then
     wget http://ftp.us.debian.org/debian/pool/main/l/linux/${deb}
   fi
+  if [ -d ../kpkg-overlay ]; then
+    err "Warning: ../kpkg-overlay exist, not override it"
+  else
+    cp -r "${REPO_BASE}/scripts/kpkg-overlay" ..
+  fi
   execute $input_param kpkg "$@"
 }
 

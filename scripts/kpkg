@@ -1,6 +1,7 @@
 #!/bin/bash
 # TODO handle if version_append is empty
 set -x
+set -e
 export debian_chroot="pbuilder"
 
 pwd=$1
@@ -11,6 +12,7 @@ deb=$1
 arch=$2
 version_append=$3
 revision_append=$4
+
 source=$(echo $deb | awk -F_ '{print $1}')
 revision=$(echo $deb | awk -F_ '{print $2}')
 ncpu=$(grep -c '^processor' /proc/cpuinfo)
@@ -20,25 +22,42 @@ dpkg -i $deb
 
 cd ..
 tar xf /usr/src/${source}.tar.*
-cd ${source}
-xzcat /usr/src/${source/source/config}/config.${arch}_none_${arch}.xz > .config
+pushd ${source}
+if [ -f /usr/src/${source/source/config}/config.${arch}_none_${arch}.xz ]; then
+  xzcat /usr/src/${source/source/config}/config.${arch}_none_${arch}.xz > .config
+elif [ -f ../config ] ;then
+  cp ../config .config
+else
+  echo "please provide .config file"
+  exit 1
+fi
 
 conf_script="/tmp/buildd/kpkg-${version_append}"
 if [ -f "$conf_script" ]; then
   bash -x "$conf_script"
 fi
 
-tmp=$(mktemp -u)
 cat <<EOF >build.sh
 export KPKG_MAINTAINER="Zhong Jianxin"
 export KPKG_EMAIL="azuwis@gmail.com"
 export DELETE_BUILD_LINK=YES
-fakeroot make-kpkg --jobs ${ncpu} --initrd --revision ${revision}${revision_append} --append_to_version -${version_append}-${arch} binary-arch
-cd ..
-dpkg-deb -R ${source/source/headers}*-${version_append}-${arch}_${revision}${revision_append}_${arch}.deb $tmp
-cp -r ${source}/debian/examples/etc/kernel/header_p* ${tmp}/etc/kernel/
-dpkg-deb -b ${tmp} .
+export INITRD=YES
+export APPEND_TO_VERSION="-${version_append}-${arch}"
+export DEBIAN_REVISION="${revision}${revision_append}"
+export CONCURRENCY_LEVEL=${ncpu}
+export KPKG_OVERLAY_DIR="../kpkg-overlay"
+export HEADER_CLEAN_HOOK="../../../../header_clean_hook"
+fakeroot make-kpkg binary-arch
 EOF
 chmod +x build.sh
-bash -x ./build.sh
 #TERM=rxvt screen </dev/tty > /dev/tty 2> /dev/tty
+#exit
+bash -x ./build.sh
+
+popd
+if [ -d kpkg-overlay ]; then
+  rm -r kpkg-overlay
+fi
+if [ x"$source" != x"" -a -d "$source" ]; then
+  rm -r "$source"
+fi
