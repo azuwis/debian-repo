@@ -1,4 +1,5 @@
 #!/bin/bash
+# TODO handle if version_append is empty
 set -x
 export debian_chroot="pbuilder"
 
@@ -11,7 +12,7 @@ arch=$2
 version_append=$3
 revision_append=$4
 source=$(echo $deb | awk -F_ '{print $1}')
-version=$(echo $deb | awk -F_ '{print $2}')
+revision=$(echo $deb | awk -F_ '{print $2}')
 ncpu=$(grep -c '^processor' /proc/cpuinfo)
 
 apt-get install -y kernel-package bc cpio libncurses-dev
@@ -27,14 +28,17 @@ if [ -f "$conf_script" ]; then
   bash -x "$conf_script"
 fi
 
+tmp=$(mktemp -u)
 cat <<EOF >build.sh
 export KPKG_MAINTAINER="Zhong Jianxin"
 export KPKG_EMAIL="azuwis@gmail.com"
 export DELETE_BUILD_LINK=YES
-#export KPKG_FOLLOW_SYMLINKS_IN_SRC=YES
-# TODO handle if $version_append is empty
-#fakeroot make-kpkg --jobs ${ncpu} --initrd --revision ${version}${revision_append} --append_to_version -${version_append}-${arch} binary-arch
-fakeroot make-kpkg --jobs ${ncpu} --initrd --revision ${version}${revision_append} --append_to_version -${version_append}-${arch} kernel_image kernel_headers
+fakeroot make-kpkg --jobs ${ncpu} --initrd --revision ${revision}${revision_append} --append_to_version -${version_append}-${arch} binary-arch
+cd ..
+dpkg-deb -R ${source/source/headers}*-${version_append}-${arch}_${revision}${revision_append}_${arch}.deb $tmp
+cp -r ${source}/debian/examples/etc/kernel/header_p* ${tmp}/etc/kernel/
+dpkg-deb -b ${tmp} .
 EOF
 chmod +x build.sh
 bash -x ./build.sh
+#TERM=rxvt screen </dev/tty > /dev/tty 2> /dev/tty
