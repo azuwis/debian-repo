@@ -106,11 +106,6 @@ shift $((OPTIND-1))
 DISTS=${DISTS:-$DEFAULT_DISTS}
 ARCHS=${ARCHS:-$DEFAULT_ARCHS}
 
-# Sort DISTS and ARCHS, workaround for reprepro missing *.orig.tar.gz when
-# processincoming
-DISTS=$(echo $DISTS | tr " " "\n" | sort | tr "\n" " ")
-ARCHS=$(echo $ARCHS | tr " " "\n" | sort | tr "\n" " ")
-
 # Run command in tmux panes, and pause after finish
 tmux_run() {
   if [ x"$TMUX" = x ]; then
