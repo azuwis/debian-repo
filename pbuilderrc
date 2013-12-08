@@ -1,4 +1,4 @@
-DEFAULT_DISTS="squeeze wheezy"
+DEFAULT_DISTS="wheezy squeeze"
 DEFAULT_ARCHS="amd64 i386"
 
 REPO_BASE="CHANGEME"

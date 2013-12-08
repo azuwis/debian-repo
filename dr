@@ -414,27 +414,9 @@ watch() {
   done
 }
 
-jpkg() {
-  jdk=$1
-  DIST=wheezy
-  ARCH=amd64
-  if [ $(echo ${DISTS} | wc -w) -eq 1 ]; then
-    DIST=$(echo ${DISTS} | tr -d ' ')
-  fi
-  if echo ${jdk} | grep -qs 'x64'; then
-    ARCH=amd64
-  elif echo ${jdk} | grep -qs 'i[3456]86'; then
-    ARCH=i386
-  elif [ $(echo ${ARCHS} | wc -w) -eq 1 ]; then
-    ARCH=$(echo ${ARCHS} | tr -d ' ')
-  fi
-  build_dir="$(readlink -f $(dirname "${jdk}"))/build"
-  mkdir -p "${build_dir}"
-  sudo cowbuilder --execute --dist ${DIST} --architecture ${ARCH} \
-    --configfile ~/.pbuilderrc \
-    --basepath ${COWBUILDER_BASE}/base-${DIST}-${ARCH}.cow \
-    --inputfile "${jdk}" --bindmount "${build_dir}" \
-    -- ${REPO_BASE}/scripts/jpkg "${jdk}" "${build_dir}"
+build_once() {
+  DISTS=$(echo ${DISTS} | awk '{print $1}')
+  ARCHS=$(echo ${ARCHS} | awk '{print $1}')
 }
 
 # execute [-i <input_file>] <cmd> [<options>]
@@ -446,20 +428,34 @@ execute() {
   cmd=$1
   shift
   pwd="$(pwd)"
-  mount_dir="${pwd}/.."
+  mount_dir="$pwd"
   for DIST in ${DISTS}; do
     for ARCH in ${ARCHS}; do
-      tmux_run "sudo cowbuilder --dist ${DIST} --architecture ${ARCH} \
+      tmux_run "sudo BIND_DIR=$pwd cowbuilder --dist ${DIST} --architecture ${ARCH} \
         --execute --configfile ~/.pbuilderrc \
         --basepath ${COWBUILDER_BASE}/base-${DIST}-${ARCH}.cow \
         --bindmount ${mount_dir} $input \
-        -- ${REPO_BASE}/scripts/${cmd} ${pwd} $*"
+        -- ${REPO_BASE}/scripts/${cmd} $*"
     done
   done
 }
 
 sandbox() {
   execute sandbox
+}
+
+jpkg() {
+  jdk=$1
+  build_once
+  if echo ${jdk} | grep -qs 'x64'; then
+    ARCHS=amd64
+  elif echo ${jdk} | grep -qs 'i[3456]86'; then
+    ARCHS=i386
+  fi
+  build_dir="$(readlink -f $(dirname "${jdk}"))/build"
+  mkdir -p "${build_dir}"
+  cd ${build_dir}
+  execute -i ../${jdk} jpkg "$@"
 }
 
 # kpkg <linux-source.deb> <arch> [<version-append>] [<revision-append>]

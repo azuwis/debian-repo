@@ -1,6 +1,6 @@
 #!/bin/bash
 jdk=$1
-result=$2
+result=$BIND_DIR
 mkdir /tmp/buildd/build
 chown nobody\: /tmp/buildd/build
 apt-get install -y java-package
