@@ -59,6 +59,7 @@ SUBCOMMANDS:
   t|tag                        | create git tag for current package version
   p|push                       | push to git remote
   f|finish                     | include and push
+  cl|clean                     | clean source dir
   cb|clean_built               | remove built files
   w|watch list_file            | watch for upstream version
   r|repo <action> [-s]         | reprepro wrapper, -s for staging repo
@@ -320,6 +321,18 @@ finish() {
   push
 }
 
+clean() {
+  check_dir
+  if [ $(git status --porcelain | wc -l) -eq 0 ]; then
+    return
+  fi
+  if [ x"$1" == x"ask" ]; then
+    git status --porcelain
+    read -p "Clear git working tree?(Ctrl-C to cancel)" tmp
+  fi
+  git reset --hard HEAD && git clean -df
+}
+
 clean_built() {
   check_dir
   for DIST in ${DISTS}; do
@@ -488,6 +501,7 @@ case "$action" in
   t)  action=tag ;;
   p)  action=push ;;
   f)  action=finish ;;
+  cl) action=clean ;;
   cb) action=clean_built ;;
   w)  action=watch ;;
   k)  action=kill_pane ;;
