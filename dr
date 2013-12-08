@@ -59,7 +59,7 @@ SUBCOMMANDS:
   t|tag                        | create git tag for current package version
   p|push                       | push to git remote
   f|finish                     | include and push
-  cl|clean                     | remove built files
+  cb|clean_built               | remove built files
   w|watch list_file            | watch for upstream version
   r|repo <action> [-s]         | reprepro wrapper, -s for staging repo
   jpkg <jdk.bin>               | use make-jpkg to build jdk.deb inside chroot env
@@ -320,11 +320,11 @@ finish() {
   push
 }
 
-clean() {
+clean_built() {
   check_dir
   for DIST in ${DISTS}; do
     for ARCH in ${ARCHS}; do
-      rm -vr "../build_${DIST}_${ARCH}/"
+      rm -vfr "../build_${DIST}_${ARCH}/"
     done
   done
 }
@@ -488,7 +488,7 @@ case "$action" in
   t)  action=tag ;;
   p)  action=push ;;
   f)  action=finish ;;
-  cl) action=clean ;;
+  cb) action=clean_built ;;
   w)  action=watch ;;
   k)  action=kill_pane ;;
   r)  action=repo ;;
