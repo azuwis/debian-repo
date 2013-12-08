@@ -64,6 +64,7 @@ SUBCOMMANDS:
   w|watch list_file            | watch for upstream version
   r|repo <action> [-s]         | reprepro wrapper, -s for staging repo
   jpkg <jdk.bin>               | use make-jpkg to build jdk.deb inside chroot env
+  list|includedeb|remove|removesrc [-s] <pkg>
 
 default dists: ${DEFAULT_DISTS}
 default archs: ${DEFAULT_ARCHS}
