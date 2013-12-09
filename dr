@@ -419,16 +419,25 @@ build_once() {
   ARCHS=$(echo ${ARCHS} | awk '{print $1}')
 }
 
-# execute [-i <input_file>] <cmd> [<options>]
+# execute [--inputfile <input_file>] <cmd> [<options>]
 execute() {
-  if [ x"$1" = x"-i" ]; then
-    input="--inputfile $2"
-    shift 2
-  fi
-  cmd=$1
+  local input
+  while [ -n "$1" ]; do
+    case "$1" in
+      --inputfile)
+        input="$input --inputfile $2"
+        shift 2
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+  local cmd=$1
   shift
+  local pwd
   pwd="$(pwd)"
-  mount_dir="$pwd"
+  local mount_dir="$pwd"
   for DIST in ${DISTS}; do
     for ARCH in ${ARCHS}; do
       tmux_run "sudo BIND_DIR=$pwd cowbuilder --dist ${DIST} --architecture ${ARCH} \
