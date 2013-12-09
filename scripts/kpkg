@@ -2,6 +2,11 @@
 set -e
 export debian_chroot="pbuilder"
 
+if [ x"$1" = x"-s" ]; then
+  run_shell="true"
+  shift
+fi
+
 arch=$1
 shift
 
@@ -59,7 +64,10 @@ EOF
 
 chmod +x ${build_dir}/build.sh
 
-#cd $build_dir; bash </dev/tty > /dev/tty 2> /dev/tty
-su -c "bash -x ${build_dir}/build.sh" - nobody
+if [ x"$run_shell" = x"true" ]; then
+  cd $build_dir; bash </dev/tty > /dev/tty 2> /dev/tty
+else
+  su -c "bash -x ${build_dir}/build.sh" - nobody
+fi
 
 cp ${build_dir}/*.deb $BIND_DIR

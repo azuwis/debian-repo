@@ -470,9 +470,13 @@ jpkg() {
   execute --inputfile "$jdk_real" jpkg "$@"
 }
 
-# kpkg <linux-source.deb> [<version-append>] [<revision-append>]
+# kpkg [-s] <linux-source.deb> [<version-append>] [<revision-append>]
 kpkg() {
   build_once
+  if [ x"$1" = x"-s" ]; then
+    run_shell="-s"
+    shift
+  fi
   deb=$1
   version_append=$2
   if [ ! -f "$deb" ]; then
@@ -492,7 +496,7 @@ kpkg() {
   if [ -f config ]; then
     input_param="$input_param --inputfile config"
   fi
-  execute $input_param kpkg $ARCHS "$@"
+  execute $input_param kpkg $run_shell $ARCHS "$@"
 }
 
 action="$1"
