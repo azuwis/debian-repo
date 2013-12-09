@@ -489,6 +489,9 @@ kpkg() {
   if [ -f "$extra_script" ]; then
     input_param="$input_param --inputfile $extra_script"
   fi
+  if [ -f config ]; then
+    input_param="$input_param --inputfile config"
+  fi
   execute $input_param kpkg $ARCHS "$@"
 }
 
