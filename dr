@@ -233,7 +233,7 @@ new_change() {
 # Build
 build() {
   check_dir
-  NCPU=$(grep "^processor" /proc/cpuinfo | wc -l)
+  NCPU=$(grep -c "^processor" /proc/cpuinfo)
   # only build in one ARCH for source which only has `Architecture: all' packages
   if [ x"$(cat debian/control |grep '^Architecture:' | grep -v all)" == x ]; then
     err "Architecture: all, build only once per DIST."
@@ -295,6 +295,7 @@ include() {
 tag() {
   check_dir
   git-buildpackage --git-tag-only "$@"
+  local branch num_patches num_gitlog version
   branch=$(git rev-parse --abbrev-ref HEAD)
   if git branch | grep -q "patch-queue/${branch}"; then
     num_patches=$(cat debian/patches/series | wc -l)
@@ -307,6 +308,7 @@ tag() {
 }
 
 push() {
+  # TODO use gbp-pq push, auto detect if push needed
   git push
   git push --tags
 }
