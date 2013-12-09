@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "#################### image_clean_hook start ####################"
+echo "#################### header_clean_hook start ####################"
 set -x
 HEADERS=$(basename $(pwd))
 VERSION=${HEADERS/linux-headers-/}
@@ -8,4 +8,4 @@ mkdir -p ${MODULES_DIR}
 ln -s /usr/src/${HEADERS} ${MODULES_DIR}/build
 ln -s /usr/src/${HEADERS} ${MODULES_DIR}/source
 set +x
-echo "#################### image_clean_hook end   ####################"
+echo "#################### header_clean_hook end   ####################"

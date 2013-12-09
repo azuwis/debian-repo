@@ -468,23 +468,26 @@ jpkg() {
   execute --inputfile "$jdk_real" jpkg "$@"
 }
 
-# kpkg <linux-source.deb> <arch> [<version-append>] [<revision-append>]
+# kpkg <linux-source.deb> [<version-append>] [<revision-append>]
 kpkg() {
+  build_once
   deb=$1
-  version_append=$3
-  input="${REPO_BASE}/scripts/kpkg-${version_append}"
-  if [ -f "$input" ]; then
-    input_param="-i $input"
-  fi
+  version_append=$2
   if [ ! -f "$deb" ]; then
-    wget http://ftp.us.debian.org/debian/pool/main/l/linux/${deb}
+    read -p "${deb} does not exist, try to download?(Ctrl-C to cancle)"
+    wget -O "$deb" http://ftp.us.debian.org/debian/pool/main/l/linux/$(basename $deb)
   fi
-  if [ -d ../kpkg-overlay ]; then
-    err "Warning: ../kpkg-overlay exist, not override it"
-  else
-    cp -r "${REPO_BASE}/scripts/kpkg-overlay" ..
+  deb_real="$(readlink -f "$deb")"
+  build_dir="$(dirname "$deb_real")/build"
+  mkdir -p "$build_dir"
+  cd "$build_dir"
+  input_param="--inputfile ${REPO_BASE}/scripts/kpkg_header_clean_hook \
+    --inputfile ${REPO_BASE}/scripts/kpkg_image_clean_hook --inputfile $deb_real"
+  extra_script="${REPO_BASE}/scripts/kpkg-${version_append}"
+  if [ -f "$extra_script" ]; then
+    input_param="$input_param --inputfile $extra_script"
   fi
-  execute $input_param kpkg "$@"
+  execute $input_param kpkg $ARCHS "$@"
 }
 
 action="$1"

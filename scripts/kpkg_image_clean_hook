@@ -1,0 +1,8 @@
+#!/bin/bash
+echo "#################### image_clean_hook start ####################"
+set -x
+IMAGE=$(basename $(pwd))
+VERSION=${IMAGE/linux-image-/}
+rm lib/modules/${VERSION}/source
+set +x
+echo "#################### image_clean_hook end   ####################"

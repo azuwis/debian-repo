@@ -1,63 +1,65 @@
 #!/bin/bash
-# TODO handle if version_append is empty
-set -x
 set -e
 export debian_chroot="pbuilder"
 
-pwd=$1
+arch=$1
 shift
-cd "$pwd"
 
-deb=$1
-arch=$2
-version_append=$3
-revision_append=$4
+deb="$(basename "$1")"
+version_append=$2
+revision_append=$3
 
-source=$(echo $deb | awk -F_ '{print $1}')
-revision=$(echo $deb | awk -F_ '{print $2}')
+if [ x"$version_append" = x"-" ]; then
+  version_append=""
+fi
+
+source=$(basename $deb | awk -F_ '{print $1}')
+revision=$(basename $deb | awk -F_ '{print $2}')
 ncpu=$(grep -c '^processor' /proc/cpuinfo)
+conf_script="/tmp/buildd/kpkg-${version_append}"
 
 apt-get install -y kernel-package bc cpio libncurses-dev
-dpkg -i $deb
+dpkg -i /tmp/buildd/$deb
 
-cd ..
-tar xf /usr/src/${source}.tar.*
-pushd ${source}
-if [ -f /usr/src/${source/source/config}/config.${arch}_none_${arch}.xz ]; then
-  xzcat /usr/src/${source/source/config}/config.${arch}_none_${arch}.xz > .config
-elif [ -f ../config ] ;then
-  cp ../config .config
-else
-  echo "please provide .config file"
-  exit 1
+build_dir=/tmp/buildd/build
+mkdir $build_dir
+chown nobody\: $build_dir
+
+cat <<EOF >${build_dir}/build.sh
+cd $build_dir
+
+if [ ! -d ${source} ]; then
+  tar xf /usr/src/${source}.tar.*
+  cd ${source}
+  if [ -f /usr/src/${source/source/config}/config.${arch}_none_${arch}.xz ]; then
+    xzcat /usr/src/${source/source/config}/config.${arch}_none_${arch}.xz > .config
+  elif [ -f /tmp/buildd/config ] ;then
+    cp /tmp/buildd/config .config
+  else
+    echo "please provide .config file"
+    exit 1
+  fi
+
+  if [ -f "$conf_script" ]; then
+    bash -x "$conf_script"
+  fi
 fi
 
-conf_script="/tmp/buildd/kpkg-${version_append}"
-if [ -f "$conf_script" ]; then
-  bash -x "$conf_script"
-fi
-
-cat <<EOF >build.sh
 export KPKG_MAINTAINER="Zhong Jianxin"
 export KPKG_EMAIL="azuwis@gmail.com"
 export DELETE_BUILD_LINK=YES
 export INITRD=YES
-export APPEND_TO_VERSION="-${version_append}-${arch}"
-export DEBIAN_REVISION="${revision}${revision_append}"
+export APPEND_TO_VERSION="${version_append:+-${version_append}}-${arch}"
+export DEBIAN_REVISION="${revision}${revision_append:+-${revision_append}}"
 export CONCURRENCY_LEVEL=${ncpu}
-export KPKG_OVERLAY_DIR="../kpkg-overlay"
-export HEADER_CLEAN_HOOK="../../../../header_clean_hook"
+export IMAGE_CLEAN_HOOK="/tmp/buildd/kpkg_image_clean_hook"
+export HEADER_CLEAN_HOOK="/tmp/buildd/kpkg_header_clean_hook"
 fakeroot make-kpkg binary-arch
 EOF
-chmod +x build.sh
-#TERM=rxvt screen </dev/tty > /dev/tty 2> /dev/tty
-#exit
-bash -x ./build.sh
 
-popd
-if [ -d kpkg-overlay ]; then
-  rm -r kpkg-overlay
-fi
-if [ x"$source" != x"" -a -d "$source" ]; then
-  rm -r "$source"
-fi
+chmod +x ${build_dir}/build.sh
+
+#cd $build_dir; bash </dev/tty > /dev/tty 2> /dev/tty
+su -c "bash -x ${build_dir}/build.sh" - nobody
+
+cp ${build_dir}/*.deb $BIND_DIR
