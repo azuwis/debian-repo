@@ -1,3 +1,0 @@
-#!/bin/bash
-set -x
-rm ${IMAGE_TOP}/lib/modules/${version}/source
