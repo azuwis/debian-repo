@@ -454,17 +454,18 @@ sandbox() {
 }
 
 jpkg() {
-  jdk=$1
   build_once
+  jdk=$1
   if echo ${jdk} | grep -qs 'x64'; then
     ARCHS=amd64
   elif echo ${jdk} | grep -qs 'i[3456]86'; then
     ARCHS=i386
   fi
-  build_dir="$(readlink -f $(dirname "${jdk}"))/build"
-  mkdir -p "${build_dir}"
-  cd ${build_dir}
-  execute -i ../${jdk} jpkg "$@"
+  jdk_real="$(readlink -f "$jdk")"
+  build_dir="$(dirname "$jdk_real")/build"
+  mkdir -p "$build_dir"
+  cd "$build_dir"
+  execute --inputfile "$jdk_real" jpkg "$@"
 }
 
 # kpkg <linux-source.deb> <arch> [<version-append>] [<revision-append>]
