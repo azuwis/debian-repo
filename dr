@@ -144,6 +144,10 @@ ucl() {
       # cowbuilder will not install extrapackages when creating .cow,
       # run `update' after `create' to get extrapackages installed
       if [ x"$action" == x"create" ]; then
+        # export empty dist, or create will fail
+        if [ ! -d ${REPREPRO_BASE_DIR}/dists/${DIST} ]; then
+          reprepro -b "$REPREPRO_BASE_DIR" export $DIST
+        fi
         tmux_run "DIST=${DIST} ARCH=${ARCH} COWBUILDER_BASE=${COWBUILDER_BASE} \
           GIT_PBUILDER_OPTIONS='${GIT_PBUILDER_OPTIONS}' \
           git-pbuilder create --othermirror '$OTHERMIRROR' $*; \
