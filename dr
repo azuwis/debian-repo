@@ -419,6 +419,7 @@ watch() {
 build_once() {
   DISTS=$(echo ${DISTS} | awk '{print $1}')
   ARCHS=$(echo ${ARCHS} | awk '{print $1}')
+  err "Only build for $DISTS $ARCHS"
 }
 
 # execute [--inputfile <input_file>] <cmd> [<options>]
