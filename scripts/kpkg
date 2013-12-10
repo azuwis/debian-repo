@@ -31,6 +31,7 @@ mkdir $build_dir
 chown nobody\: $build_dir
 
 cat <<EOF >${build_dir}/build.sh
+#!/bin/bash
 cd $build_dir
 
 if [ ! -d ${source} ]; then
