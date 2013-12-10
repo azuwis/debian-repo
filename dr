@@ -113,7 +113,7 @@ tmux_run() {
     exit 1
   fi
   tmux split-window -d \
-    "$@; echo '#### finished, press any key to exit ####'; read tmp"
+    "printf '\033]2;$DIST $ARCH\033\\'; $@; echo '#### finished, press ENTER to exit ####'; read tmp"
   tmux select-layout even-vertical >& /dev/null
 }
 
