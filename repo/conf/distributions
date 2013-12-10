@@ -21,7 +21,7 @@ Description: Custom debian jessie repo for NetEase
 Tracking: all includechanges
 SignWith: yes
 Log: jessie.log
- --changes email-for-changes
+ --changes email_changes
 
 Codename: wheezy
 Suite: stable
@@ -35,7 +35,7 @@ Tracking: all includechanges
 SignWith: yes
 Update: haproxy
 Log: wheezy.log
- --changes email-for-changes
+ --changes email_changes
 
 Codename: squeeze
 Suite: oldstable
@@ -48,7 +48,7 @@ Description: Custom debian squeeze repo for NetEase
 Tracking: all includechanges
 SignWith: yes
 Log: squeeze.log
- --changes email-for-changes
+ --changes email_changes
 
 Codename: lenny
 Suite: oldoldstable
@@ -61,4 +61,4 @@ Description: Custom debian lenny repo for NetEase
 Tracking: all includechanges
 SignWith: yes
 Log: lenny.log
- --changes email-for-changes
+ --changes email_changes
