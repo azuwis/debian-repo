@@ -114,7 +114,8 @@ tmux_run() {
     exit 1
   fi
   tmux split-window -d \
-    "printf '\033]2;$DIST-$ARCH\033\\'; $@; echo '#### finished, press ENTER to exit ####'; read tmp"
+    "printf '\033]2;$DIST-$ARCH\033\\'; $@;
+      echo '#### Press ENTER to exit ####'; read tmp"
   tmux select-layout even-vertical >& /dev/null
 }
 
@@ -331,7 +332,7 @@ clean() {
   fi
   if [ x"$1" == x"ask" ]; then
     git status --porcelain
-    read -p "Clear git working tree?(Ctrl-C to cancel)" tmp
+    read -p "Clear git working tree?(Ctrl-C to cancel)"
   fi
   git reset --hard HEAD && git clean -df
 }
