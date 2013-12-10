@@ -140,7 +140,6 @@ ucl() {
     GIT_PBUILDER_OPTIONS="--configfile $HOME/.pbuilderrc"
   fi
   for DIST in ${DISTS}; do
-    load_var OTHERMIRROR
     for ARCH in ${ARCHS}; do
       # cowbuilder will not install extrapackages when creating .cow,
       # run `update' after `create' to get extrapackages installed
@@ -151,14 +150,14 @@ ucl() {
         fi
         tmux_run "DIST=${DIST} ARCH=${ARCH} COWBUILDER_BASE=${COWBUILDER_BASE} \
           GIT_PBUILDER_OPTIONS='${GIT_PBUILDER_OPTIONS}' \
-          git-pbuilder create --othermirror '$OTHERMIRROR' $*; \
+          git-pbuilder create $*; \
           DIST=${DIST} ARCH=${ARCH} COWBUILDER_BASE=${COWBUILDER_BASE} \
           GIT_PBUILDER_OPTIONS='${GIT_PBUILDER_OPTIONS}' \
           git-pbuilder update"
       else
         tmux_run "DIST=${DIST} ARCH=${ARCH} COWBUILDER_BASE=${COWBUILDER_BASE} \
           GIT_PBUILDER_OPTIONS='${GIT_PBUILDER_OPTIONS}' \
-          git-pbuilder ${action} --othermirror '$OTHERMIRROR' $*"
+          git-pbuilder ${action} $*"
       fi
     done
   done
