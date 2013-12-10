@@ -7,7 +7,7 @@ ARCH="$(echo $SUDO_COMMAND | perl -ne 'print $1 if /--architecture\s+(\w+)\s+/')
 COWBUILDER_BASE="${REPO_BASE}/pbuilder"
 BUILDPLACE="${COWBUILDER_BASE}/build/"
 BUILDRESULT="${COWBUILDER_BASE}/result/"
-APTCACHE="${COWBUILDER_BASE}/aptcache/"
+APTCACHE="${COWBUILDER_BASE}/aptcache/${DIST}/${ARCH}/"
 
 MIRRORSITE="http://repo.163.org/debian"
 OTHERMIRROR="deb http://repo.163.org/netease ${DIST} main contrib non-free"
