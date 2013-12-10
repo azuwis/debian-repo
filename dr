@@ -88,7 +88,7 @@ load_var DEFAULT_ARCHS
 DISTS=""
 ARCHS=""
 OPTIND=1
-while getopts "hlaiswS" opt; do
+while getopts "lswjSaih" opt; do
   case "$opt" in
     l) DISTS="$DISTS lenny" ;;
     s) DISTS="$DISTS squeeze" ;;
