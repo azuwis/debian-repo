@@ -49,6 +49,8 @@ if [ ! -d ${source} ]; then
   if [ -f "$conf_script" ]; then
     bash -x "$conf_script"
   fi
+else
+  cd ${source}
 fi
 
 export KPKG_MAINTAINER="Zhong Jianxin"
