@@ -272,20 +272,6 @@ build_all() {
   done
 }
 
-reprepro_include() {
-  check_dir
-  local source
-  source=$(dpkg-parsechangelog | awk '/^Source: / {print $2}')
-  local version
-  version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
-  for DIST in ${DISTS}; do
-    for ARCH in ${ARCHS}; do
-      reprepro -b "$1" include ${DIST} \
-        "../build_${DIST}_${ARCH}/${source}_${version}${DIST}_${ARCH}.changes"
-    done
-  done
-}
-
 staging() {
   check_dir
   source=$(dpkg-parsechangelog | awk '/^Source: / {print $2}')
