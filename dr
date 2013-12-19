@@ -176,7 +176,7 @@ refresh_patch() {
 new_patch() {
   if git rev-parse --abbrev-ref HEAD | grep -q '^patch-queue/'; then
     gbp-pq export
-    git checkout -- debian/patches/
+    git checkout -- debian/patches/ || echo -n > debian/patches/series
     num_patches=$(cat debian/patches/series | wc -l)
     pushd debian/patches >& /dev/null
     for i in *.patch; do
