@@ -287,6 +287,9 @@ reprepro_include() {
 }
 
 staging() {
+  check_dir
+  source=$(dpkg-parsechangelog | awk '/^Source: / {print $2}')
+  repo removesrc -s $source
   repo include_all -s
 }
 
