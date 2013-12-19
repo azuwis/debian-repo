@@ -3,6 +3,4 @@
 codename=$(lsb_release --short --codename)
 cd /tmp/buildd/*/debian/..
 debchange --append --maintmaint --distribution "${codename}" "Build against ${codename}"
-if [ x"$codename" != x"sid" ]; then
-  sed -i '1s/)/'${codename}')/' debian/changelog
-fi
+sed -i '1s/)/'${codename}')/' debian/changelog
