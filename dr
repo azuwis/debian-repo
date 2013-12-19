@@ -369,7 +369,7 @@ repo() {
     if [ x"$action" = x"include_all" ]; then
       for ARCH in ${ARCHS}; do
         reprepro -b "$base" include ${DIST} \
-          "../build_${DIST}_${ARCH}/${source}_${version}${DIST}_${ARCH}.changes"
+          "../build_${DIST}_${ARCH}/${source}_${version}~${DIST}_${ARCH}.changes"
       done
     else
       reprepro -b "$base" "$action" ${DIST} "$@"
