@@ -405,7 +405,7 @@ watch() {
         echo "${debian_source}: debian(${debian_dist} ${debian_version}) local(${local_dist} ${local_version})"
       fi
     else
-      echo "${debian_source}: can't get upstream version"
+      echo "${debian_source}: debian(${debian_dist} ?}) local(${local_dist} ${local_version})"
     fi
   done
 }
