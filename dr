@@ -63,6 +63,7 @@ SUBCOMMANDS:
   cb|clean_built               | remove built files
   w|watch list_file            | watch for upstream version
   r|repo <action> [-s]         | reprepro wrapper, -s for staging repo
+  log                          | view build log
   jpkg <jdk.bin>               | use make-jpkg to build jdk.deb inside chroot env
   kpkg [-s] <linux-source.deb> [<version-append>] [<revision-append>]
   list|includedeb|remove|removesrc [-s] <pkg>
@@ -371,7 +372,7 @@ log() {
   version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
   for DIST in ${DISTS}; do
     for ARCH in ${ARCHS}; do
-      tmux_run "less ../build_${DIST}_${ARCH}/${source}_${version}_*.build"
+      tmux_run "less ../build_${DIST}_${ARCH}/${source}_${version/[0-9]*:/}_*.build"
     done
   done
 }
