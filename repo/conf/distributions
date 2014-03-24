@@ -33,7 +33,7 @@ Version: 1.0
 Description: Custom debian wheezy repo for NetEase
 Tracking: all includechanges
 SignWith: yes
-Update: haproxy
+Update: wheezy-backports jessie-to-wheezy
 Log: wheezy.log
  --changes email_changes
 

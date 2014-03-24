@@ -1,6 +1,13 @@
-Name: haproxy
-Method: http://ftp2.jp.debian.org/debian
+Name: wheezy-backports
+Method: http://ftp.us.debian.org/debian
 Architectures: i386 amd64 source
 Suite: wheezy-backports
 VerifyRelease: 46925553
-FilterFormula: $Source (== haproxy)
+FilterFormula: $Source (== haproxy) | $Source (== init-system-helpers) | Package (== firmware-bnx2) | Package (== firmware-bnx2x)
+
+Name: jessie-to-wheezy
+Method: http://ftp.us.debian.org/debian
+Architectures: i386 amd64 source
+Suite: jessie
+VerifyRelease: 46925553
+FilterFormula: $Source (== docker.io)
