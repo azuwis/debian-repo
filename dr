@@ -192,6 +192,7 @@ new_patch() {
       fi
     done
     popd >& /dev/null
+    # XXX not always doing right
     git clean --force
     refresh_patch
     gbp-pq switch
@@ -494,6 +495,7 @@ kpkg() {
   if [ -f "$extra_script" ]; then
     input_param="$input_param --inputfile $extra_script"
   fi
+  # TODO config as a arg
   if [ -f config ]; then
     input_param="$input_param --inputfile config"
   fi
