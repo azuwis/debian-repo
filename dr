@@ -51,6 +51,7 @@ SUBCOMMANDS:
   np|new_patch                 | run after git commit at patch-queue/* branch
   ap|amend_patch               | amend the latest patch in queue
   nc|new_change                | create new changelog stanza
+  cc|commit_change             | git add and commit changelog
   b|build [<debuild-options>]  | run inside debian source dir
   ba|build_all [<src_dir> ...] | build for every src_dir
   k|kill_pane                  | kill other tmux panes
@@ -232,6 +233,10 @@ new_change() {
   else
     git-dch --release --new-version="${version}+${append}1"
   fi
+  commit_change
+}
+
+commit_change() {
   version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
   git add debian/changelog && git commit -m "debian/changelog: $version"
 }
@@ -504,6 +509,7 @@ case "$action" in
   np) action=new_patch ;;
   ap) action=amend_patch ;;
   nc) action=new_change ;;
+  cc) action=commit_change ;;
   b)  action=build ;;
   ba) action=build_all ;;
   s)  action=staging ;;
