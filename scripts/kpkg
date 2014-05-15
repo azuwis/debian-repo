@@ -10,7 +10,7 @@ fi
 arch=$1
 shift
 
-deb="$(basename "$1")"
+pkg="$(basename "$1")"
 version_append=$2
 revision_append=$3
 
@@ -18,13 +18,22 @@ if [ x"$version_append" = x"-" ]; then
   version_append=""
 fi
 
-source=$(basename $deb | awk -F_ '{print $1}')
-revision=$(basename $deb | awk -F_ '{print $2}')
 ncpu=$(grep -c '^processor' /proc/cpuinfo)
 conf_script="/tmp/buildd/kpkg-${version_append}"
 
+case "$pkg" in
+  *.deb)
+    source=$(echo $pkg | awk -F_ '{print $1}')
+    revision=$(echo $pkg | awk -F_ '{print $2}')
+    dpkg -i /tmp/buildd/$pkg
+    ;;
+  *)
+    source=${pkg/.tar.*/}
+    revision="${source/linux-/}-1"
+    ;;
+esac
+
 apt-get install -y kernel-package bc cpio libncurses-dev
-dpkg -i /tmp/buildd/$deb
 
 build_dir=/tmp/buildd/build
 mkdir $build_dir
@@ -35,7 +44,7 @@ cat <<EOF >${build_dir}/build.sh
 cd $build_dir
 
 if [ ! -d ${source} ]; then
-  tar xf /usr/src/${source}.tar.*
+  tar xf /usr/src/${source}.tar.* || tar xf /tmp/buildd/${pkg}
   cd ${source}
   if [ -f /usr/src/${source/source/config}/config.${arch}_none_${arch}.xz ]; then
     xzcat /usr/src/${source/source/config}/config.${arch}_none_${arch}.xz > .config

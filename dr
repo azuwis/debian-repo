@@ -478,18 +478,18 @@ kpkg() {
     run_shell="-s"
     shift
   fi
-  deb=$1
+  pkg=$1
   version_append=$2
-  if [ ! -f "$deb" ]; then
-    read -p "${deb} does not exist, try to download?(Ctrl-C to cancle)"
-    wget -O "$deb" http://ftp.us.debian.org/debian/pool/main/l/linux/$(basename $deb)
+  if [ ! -f "$pkg" ]; then
+    read -p "${pkg} does not exist, try to download?(Ctrl-C to cancle)"
+    wget -O "$pkg" http://ftp.us.debian.org/debian/pool/main/l/linux/$(basename $deb)
   fi
-  deb_real="$(readlink -f "$deb")"
-  build_dir="$(dirname "$deb_real")/build"
+  pkg_real="$(readlink -f "$pkg")"
+  build_dir="$(dirname "$pkg_real")/build"
   mkdir -p "$build_dir"
   cd "$build_dir"
   input_param="--inputfile ${REPO_BASE}/scripts/kpkg_header_clean_hook \
-    --inputfile ${REPO_BASE}/scripts/kpkg_image_clean_hook --inputfile $deb_real"
+    --inputfile ${REPO_BASE}/scripts/kpkg_image_clean_hook --inputfile $pkg_real"
   extra_script="${REPO_BASE}/scripts/kpkg-${version_append}"
   if [ -f "$extra_script" ]; then
     input_param="$input_param --inputfile $extra_script"
