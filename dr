@@ -396,7 +396,12 @@ watch() {
     if [ x"$debian_dist" = x"" -o x"$debian_dist" = x"-" ]; then
       debian_dist=$local_dist
     fi
-    debian_version=`curl -sL https://packages.debian.org/source/${debian_dist}/${debian_source} | grep "Source Package: ${debian_source}" | awk -F'(\(|\))' '{print $2}'`
+    local tries=3
+    local debian_version=""
+    while [ $tries -gt 0 -a x"$debian_version" = x"" ]; do
+      debian_version=`curl -sL https://packages.debian.org/source/${debian_dist}/${debian_source} | grep "Source Package: ${debian_source}" | awk -F'(\(|\))' '{print $2}'`
+      tries=$((tries-1))
+    done
     if [ x"$debian_version" != x"" ]; then
       ignore=false
       for i in ignored_versions; do
@@ -412,7 +417,7 @@ watch() {
         echo "${debian_source}: debian(${debian_dist} ${debian_version}) local(${local_dist} ${local_version})"
       fi
     else
-      echo "${debian_source}: debian(${debian_dist} ?}) local(${local_dist} ${local_version})"
+      echo "${debian_source}: debian(${debian_dist} ?) local(${local_dist} ${local_version})"
     fi
   done
 }
