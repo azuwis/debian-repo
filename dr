@@ -179,7 +179,7 @@ new_patch() {
   if git rev-parse --abbrev-ref HEAD | grep -q '^patch-queue/'; then
     gbp-pq export
     git checkout -- debian/patches/ || echo -n > debian/patches/series
-    num_patches=$(grep -v '^#' debian/patches/series | wc -l)
+    num_patches=$(grep -Ev '(^#|^\s*$)' debian/patches/series | wc -l)
     pushd debian/patches >& /dev/null
     for i in *.patch; do
       if [[ ${i:0:4} =~ ^[0-9]+$ ]] && [ ${i:0:4} -gt $num_patches ]; then
