@@ -3,7 +3,7 @@ Method: http://ftp.us.debian.org/debian
 Architectures: i386 amd64 source
 Suite: wheezy-backports
 VerifyRelease: 46925553
-FilterFormula: $Source (== haproxy) | $Source (== init-system-helpers) | Package (== firmware-bnx2) | Package (== firmware-bnx2x)
+FilterFormula: $Source (== haproxy) | $Source (== init-system-helpers) | Package (== firmware-bnx2) | Package (== firmware-bnx2x) | $Source (== keepalived)
 
 Name: jessie-to-wheezy
 Method: http://ftp.us.debian.org/debian
