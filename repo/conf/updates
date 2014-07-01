@@ -10,4 +10,4 @@ Method: http://ftp.us.debian.org/debian
 Architectures: i386 amd64 source
 Suite: jessie
 VerifyRelease: 46925553
-FilterFormula: $Source (== docker.io)
+FilterFormula: $Source (== dh-golang)
