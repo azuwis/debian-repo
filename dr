@@ -26,8 +26,13 @@ init() {
   ln -svi ${REPO_BASE}/dr ~/bin/
   ln -svi ${REPO_BASE}/gbp.conf ~/.gbp.conf
   ln -svi ${REPO_BASE}/pbuilderrc ~/.pbuilderrc
-  sudo apt-get install git-buildpackage cowbuilder reprepro bsd-mailx sudo \
-    fakeroot tmux
+  PACKAGES="git-buildpackage cowbuilder reprepro bsd-mailx sudo fakeroot tmux"
+  err ""
+  err "Try to install dependancies using sudo:"
+  err "  ${PACKAGES}"
+  err "Make sure you can run 'sudo apt-get', or install the mentioned packages yourself."
+  err ""
+  sudo apt-get install $PACKAGES
 }
 usage() {
   cat <<EOF
