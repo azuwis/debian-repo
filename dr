@@ -56,7 +56,7 @@ SUBCOMMANDS:
   np|new_patch                 | run after git commit at patch-queue/* branch
   ap|amend_patch               | amend the latest patch in queue
   nc|new_change                | create new changelog stanza
-  cc|commit_change             | git add and commit changelog
+  cc|commit_change             | git add and commit debian/changelog
   b|build [<debuild-options>]  | run inside debian source dir
   ba|build_all [<src_dir> ...] | build for every src_dir
   k|kill_pane                  | kill other tmux panes
