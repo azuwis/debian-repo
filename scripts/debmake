@@ -1,0 +1,42 @@
+#!/bin/bash
+#set -x
+export debian_chroot="pbuilder"
+cd "$BIND_DIR"
+
+apt-get install -y "${APTGETOPT[@]}" debmake locales python3-debian git
+echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+dpkg-reconfigure locales
+export LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 DEBEMAIL="azuwis@gmail.com" DEBFULLNAME="Zhong Jianxin"
+
+version=$(git describe --tags)
+version=${version/#v/}
+version=${version/-/+git}
+version=${version/-g/+}
+
+read -p "Version: $version, Press enter or enter you own: " tmp
+if [ x"$tmp" != x ]; then
+  version=$tmp
+fi
+
+branch=$(git rev-parse --abbrev-ref HEAD)
+if [ x"$branch" = x"master" ]; then
+  revision="build"
+else
+  revision="$branch"
+fi
+revision="${revision}1"
+
+read -p "Revision: $revision, Press enter or enter you own: " tmp
+if [ x"$tmp" != x ]; then
+  revision=$tmp
+fi
+
+rm -r -I debian
+
+debmake --upstreamversion $version --revision $revision --tar "$@"
+cp -r ../*/debian .
+chown -R --reference . debian
+
+sed -i 's/UNRELEASED/unstable/' debian/changelog
+
+#/bin/bash </dev/tty > /dev/tty 2> /dev/tty

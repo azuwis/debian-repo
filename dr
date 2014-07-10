@@ -512,6 +512,11 @@ kpkg() {
   execute $input_param kpkg $run_shell $ARCHS "$@"
 }
 
+debmake() {
+  build_once
+  execute debmake "$@"
+}
+
 action="$1"
 case "$action" in
   c)  action=create ;;
