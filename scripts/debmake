@@ -8,7 +8,7 @@ echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
 dpkg-reconfigure locales
 export LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 DEBEMAIL="azuwis@gmail.com" DEBFULLNAME="Zhong Jianxin"
 
-version=$(git describe --tags)
+version=$(git describe --tags upstream)
 version=${version/#v/}
 version=${version/-/+git}
 version=${version/-g/+}
