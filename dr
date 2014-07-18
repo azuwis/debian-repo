@@ -517,6 +517,30 @@ debmake() {
   execute debmake "$@"
 }
 
+snapshot() {
+  check_dir
+  git fetch
+  git rebase origin/master
+  git update-ref refs/heads/upstream origin/master
+  local version branch
+  version=$(git describe --tags upstream)
+  version=${version/#upstream\/}
+  version=${version/#v/}
+  version=${version/-/+git}
+  version=${version/-g/+}
+  echo $version
+  branch=$(git rev-parse --abbrev-ref HEAD)
+  if [ x"$branch" = x"master" ]; then
+    revision="build"
+  else
+    revision="$branch"
+  fi
+  revision="${revision}1"
+  debchange -v ${version}-${revision} "New upstream snapshot."
+  commit_change
+  git show
+}
+
 action="$1"
 case "$action" in
   c)  action=create ;;
