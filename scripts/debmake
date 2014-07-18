@@ -9,6 +9,7 @@ dpkg-reconfigure locales
 export LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 DEBEMAIL="azuwis@gmail.com" DEBFULLNAME="Zhong Jianxin"
 
 version=$(git describe --tags upstream)
+version=${version/#upstream\/}
 version=${version/#v/}
 version=${version/-/+git}
 version=${version/-g/+}
