@@ -11,32 +11,32 @@ err() {
 load_var() {
   local file=~/.pbuilderrc
   if [ -f "$file" ]; then
-    eval $(grep "^$1" $file)
+    eval "$(grep "^$1" $file)"
   fi
 }
 # init build host env
 init() {
-  REPO_BASE="$(dirname $(readlink -f "$0"))"
+  REPO_BASE="$(dirname "$(readlink -f "$0")")"
   cd "${REPO_BASE}"
   mkdir -p pbuilder
   sed -i -e "s#^REPO_BASE=.*#REPO_BASE=\"${REPO_BASE}\"#" pbuilderrc
   # let git ignore REPO_BASE line in pbuilderrc
   git config filter.stripvar.clean "perl -lpe 's/^(REPO_BASE)=(.*)/\$1=\"CHANGEME\"/'"
   mkdir -p ~/bin/
-  ln -svi ${REPO_BASE}/dr ~/bin/
-  ln -svi ${REPO_BASE}/gbp.conf ~/.gbp.conf
-  ln -svi ${REPO_BASE}/pbuilderrc ~/.pbuilderrc
+  ln -svi "${REPO_BASE}"/dr ~/bin/
+  ln -svi "${REPO_BASE}"/gbp.conf ~/.gbp.conf
+  ln -svi "${REPO_BASE}"/pbuilderrc ~/.pbuilderrc
   PACKAGES="git-buildpackage cowbuilder reprepro bsd-mailx sudo fakeroot tmux"
   err ""
   err "Try to install dependancies using sudo:"
   err "  ${PACKAGES}"
   err "Make sure you can run 'sudo apt-get', or install the mentioned packages yourself."
   err ""
-  sudo apt-get install $PACKAGES
+  sudo apt-get install "$PACKAGES"
 }
 usage() {
   cat <<EOF
-USAGE: $(basename $0) [-hswjSai] subcommand [options ...]
+USAGE: $(basename "$0") [-hswjSai] subcommand [options ...]
 
 OPTIONS:
   -h | help
@@ -152,8 +152,8 @@ ucl() {
       # run `update' after `create' to get extrapackages installed
       if [ x"$action" == x"create" ]; then
         # export empty dist, or create will fail
-        if [ ! -d ${REPREPRO_BASE_DIR}/dists/${DIST} ]; then
-          reprepro -b "$REPREPRO_BASE_DIR" export $DIST
+        if [ ! -d "${REPREPRO_BASE_DIR}/dists/${DIST}" ]; then
+          reprepro -b "$REPREPRO_BASE_DIR" export "$DIST"
         fi
         tmux_run "DIST=${DIST} ARCH=${ARCH} COWBUILDER_BASE=${COWBUILDER_BASE} \
           GIT_PBUILDER_OPTIONS='${GIT_PBUILDER_OPTIONS}' \
@@ -184,12 +184,12 @@ new_patch() {
   if git rev-parse --abbrev-ref HEAD | grep -q '^patch-queue/'; then
     gbp-pq export
     git checkout -- debian/patches/ || echo -n > debian/patches/series
-    num_patches=$(grep -Ev '(^#|^\s*$)' debian/patches/series | wc -l)
+    num_patches=$(grep -Evc '(^#|^\s*$)' debian/patches/series)
     pushd debian/patches >& /dev/null
     for i in *.patch; do
-      if [[ ${i:0:4} =~ ^[0-9]+$ ]] && [ ${i:0:4} -gt $num_patches ]; then
-        git add $i
-        echo $i >> series
+      if [[ ${i:0:4} =~ ^[0-9]+$ ]] && [ "${i:0:4}" -gt "$num_patches" ]; then
+        git add "$i"
+        echo "$i" >> series
         git add series
         tmp=${i:5}
         msg=${tmp/%.patch/}
@@ -211,8 +211,8 @@ amend_patch() {
   if git rev-parse --abbrev-ref HEAD | grep -q '^patch-queue/'; then
     git commit --verbose --amend --no-edit
     gbp-pq export
-    patch=$(cat debian/patches/series | wc -l)
-    git add debian/patches/$(printf '%04d' "$patch")-*
+    patch=$(wc -l < debian/patches/series)
+    git add debian/patches/"$(printf '%04d' "$patch")-*"
     git checkout -- debian/patches/
     git clean --force
     git commit --verbose --amend --no-edit
@@ -234,7 +234,7 @@ new_change() {
     append="$branch"
   fi
   version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
-  if echo ${version} | grep -q "${append}[0-9]*$"; then
+  if echo "${version}" | grep -q "${append}[0-9]*$"; then
     git-dch --release
   else
     git-dch --release --new-version="${version}+${append}1"
@@ -252,9 +252,9 @@ build() {
   check_dir
   NCPU=$(grep -c "^processor" /proc/cpuinfo)
   # only build in one ARCH for source which only has `Architecture: all' packages
-  if [ x"$(cat debian/control |grep '^Architecture:' | grep -v all)" == x ]; then
+  if [ x"$(grep '^Architecture:' debian/control | grep -v all)" == x ]; then
     err "Architecture: all, build only once per DIST."
-    ARCHS=$(echo ${ARCHS} | awk '{print $1}')
+    ARCHS=$(echo "${ARCHS}" | awk '{print $1}')
   fi
   # include orig source for the first build
   source_type="-sa"
@@ -287,7 +287,7 @@ build_all() {
 staging() {
   check_dir
   source=$(dpkg-parsechangelog | awk '/^Source: / {print $2}')
-  repo removesrc -s $source || true
+  repo removesrc -s "$source" || true
   repo include_all -s
 }
 
@@ -295,7 +295,7 @@ include() {
   DATE=$(date +%Y-%m%d-%H%M%S)
   repo gensnapshot prev
   repo include_all
-  repo gensnapshot $DATE
+  repo gensnapshot "$DATE"
 }
 
 tag() {
@@ -304,9 +304,9 @@ tag() {
   local branch num_patches num_gitlog version
   branch=$(git rev-parse --abbrev-ref HEAD)
   if git branch | grep -q "patch-queue/${branch}"; then
-    num_patches=$(cat debian/patches/series | wc -l)
-    num_gitlog=$(git log --oneline ${branch}..patch-queue/${branch} | wc -l)
-    if [ $num_patches -eq $num_gitlog ]; then
+    num_patches=$(wc -l < debian/patches/series)
+    num_gitlog=$(git log --oneline "${branch}..patch-queue/${branch}" | wc -l)
+    if [ "$num_patches" -eq "$num_gitlog" ]; then
       version=$(dpkg-parsechangelog | awk '/^Version: / {print $2}')
       git tag "patch-queue/${version}" "patch-queue/${branch}"
     fi
@@ -327,7 +327,7 @@ finish() {
 
 clean() {
   check_dir
-  if [ $(git status --porcelain | wc -l) -eq 0 ]; then
+  if [ "$(git status --porcelain | wc -l)" -eq 0 ]; then
     return
   fi
   if [ x"$1" == x"ask" ]; then
@@ -366,11 +366,11 @@ repo() {
   for DIST in ${DISTS}; do
     if [ x"$action" = x"include_all" ]; then
       for ARCH in ${ARCHS}; do
-        reprepro -b "$base" include ${DIST} \
+        reprepro -b "$base" include "${DIST}" \
           "../build_${DIST}_${ARCH}/${source}_${version/[0-9]*:/}~${DIST}_${ARCH}.changes"
       done
     else
-      reprepro -b "$base" "$action" ${DIST} "$@"
+      reprepro -b "$base" "$action" "${DIST}" "$@"
     fi
   done
 }
@@ -395,22 +395,22 @@ watch() {
   else
     watch_list=$1
   fi
-  cat $watch_list | grep -v '^#' | while read debian_source local_dist debian_dist ignored_versions
+  grep -v '^#' "$watch_list" | while read debian_source local_dist debian_dist ignored_versions
   do
-    local_version=`reprepro -b ${REPREPRO_BASE_DIR} --list-format '${version}' listfilter $local_dist '$Source (== '$debian_source'), $Architecture (==source)'`
+    local_version=$(reprepro -b "${REPREPRO_BASE_DIR}" --list-format '${version}' listfilter "$local_dist" '$Source (== '$debian_source'), $Architecture (==source)')
     if [ x"$debian_dist" = x"" -o x"$debian_dist" = x"-" ]; then
       debian_dist=$local_dist
     fi
     local tries=3
     local debian_version=""
     while [ $tries -gt 0 -a x"$debian_version" = x"" ]; do
-      debian_version=`curl -sL https://packages.debian.org/source/${debian_dist}/${debian_source} | grep "Source Package: ${debian_source}" | awk -F'(\(|\))' '{print $2}'`
+      debian_version=$(curl -sL "https://packages.debian.org/source/${debian_dist}/${debian_source}" | grep "Source Package: ${debian_source}" | awk -F'(\(|\))' '{print $2}')
       tries=$((tries-1))
     done
     if [ x"$debian_version" != x"" ]; then
       ignore=false
-      for i in ignored_versions; do
-        if [ x"$debian_version" = x"$ignored_versions" ]; then
+      for i in $ignored_versions; do
+        if [ x"$debian_version" = x"$i" ]; then
             ignore=true
             break
         fi
@@ -428,8 +428,8 @@ watch() {
 }
 
 build_once() {
-  DISTS=$(echo ${DISTS} | awk '{print $1}')
-  ARCHS=$(echo ${ARCHS} | awk '{print $1}')
+  DISTS=$(echo "${DISTS}" | awk '{print $1}')
+  ARCHS=$(echo "${ARCHS}" | awk '{print $1}')
   err "Only build for $DISTS $ARCHS"
 }
 
@@ -470,9 +470,9 @@ sandbox() {
 jpkg() {
   build_once
   jdk=$1
-  if echo ${jdk} | grep -qs 'x64'; then
+  if echo "${jdk}" | grep -qs 'x64'; then
     ARCHS=amd64
-  elif echo ${jdk} | grep -qs 'i[3456]86'; then
+  elif echo "${jdk}" | grep -qs 'i[3456]86'; then
     ARCHS=i386
   fi
   jdk_real="$(readlink -f "$jdk")"
@@ -493,7 +493,7 @@ kpkg() {
   version_append=$2
   if [ ! -f "$pkg" ]; then
     read -p "${pkg} does not exist, try to download?(Ctrl-C to cancle)"
-    wget -O "$pkg" http://ftp.us.debian.org/debian/pool/main/l/linux/$(basename $deb)
+    wget -O "$pkg" "http://ftp.us.debian.org/debian/pool/main/l/linux/$(basename "$deb")"
   fi
   pkg_real="$(readlink -f "$pkg")"
   build_dir="$(dirname "$pkg_real")/build"
@@ -509,7 +509,7 @@ kpkg() {
   if [ -f config ]; then
     input_param="$input_param --inputfile config"
   fi
-  execute $input_param kpkg $run_shell $ARCHS "$@"
+  execute "$input_param" kpkg $run_shell $ARCHS "$@"
 }
 
 debmake() {
@@ -528,7 +528,7 @@ snapshot() {
   version=${version/#v/}
   version=${version/-/+git}
   version=${version/-g/+}
-  echo $version
+  echo "$version"
   branch=$(git rev-parse --abbrev-ref HEAD)
   if [ x"$branch" = x"master" ]; then
     revision="build"
@@ -536,7 +536,7 @@ snapshot() {
     revision="$branch"
   fi
   revision="${revision}1"
-  debchange -v ${version}-${revision} "New upstream snapshot."
+  debchange -v "${version}-${revision}" "New upstream snapshot."
   commit_change
   git show
 }
@@ -574,7 +574,7 @@ case "$action" in
     repo $action "$@"
     ;;
   *)
-    if [ x$(type -t $action) == x"function" ]; then
+    if [ x"$(type -t $action)" == x"function" ]; then
       shift
       $action "$@"
     else
