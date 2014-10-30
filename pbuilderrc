@@ -9,11 +9,12 @@ BUILDPLACE="${COWBUILDER_BASE}/build/"
 BUILDRESULT="${COWBUILDER_BASE}/result/"
 APTCACHE="${COWBUILDER_BASE}/aptcache/${DIST}/${ARCH}/"
 
-MIRRORSITE="http://repo.163.org/debian"
+MIRRORSITE="http://ftp.us.debian.org/debian"
 if [ x"$DIST" = x"lenny" ]; then
-    MIRRORSITE="http://repo.163.org/archive.debian.org/debian"
+    MIRRORSITE="http://archive.debian.org/debian"
 fi
-OTHERMIRROR="deb http://repo.163.org/netease ${DIST} main contrib non-free"
+#OTHERMIRROR="deb http://<YOUR-OWN-REPO>/debian ${DIST} main contrib non-free"
+
 COMPONENTS="main contrib non-free"
 EXTRAPACKAGES="fakeroot lsb-release devscripts lintian screen vim less"
 
