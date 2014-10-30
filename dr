@@ -22,6 +22,8 @@ init() {
   sed -i -e "s#^REPO_BASE=.*#REPO_BASE=\"${REPO_BASE}\"#" pbuilderrc
   # let git ignore REPO_BASE line in pbuilderrc
   git config filter.stripvar.clean "perl -lpe 's/^(REPO_BASE)=(.*)/\$1=\"CHANGEME\"/'"
+  err "Create symlinks for dr command and config files:"
+  err ""
   mkdir -p ~/bin/
   ln -svi "${REPO_BASE}"/dr ~/bin/
   ln -svi "${REPO_BASE}"/gbp.conf ~/.gbp.conf
@@ -30,6 +32,7 @@ init() {
   err ""
   err "Try to install dependancies using sudo:"
   err "  ${PACKAGES}"
+  err ""
   err "Make sure you can run 'sudo apt-get', or install the mentioned packages yourself."
   err ""
   sudo apt-get install "$PACKAGES"
