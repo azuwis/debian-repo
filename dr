@@ -18,17 +18,20 @@ load_var() {
 init() {
   REPO_BASE="$(dirname "$(readlink -f "$0")")"
   cd "${REPO_BASE}"
+
   mkdir -p pbuilder
   sed -i -e "s#^REPO_BASE=.*#REPO_BASE=\"${REPO_BASE}\"#" pbuilderrc
   # let git ignore REPO_BASE line in pbuilderrc
   git config filter.stripvar.clean "perl -lpe 's/^(REPO_BASE)=(.*)/\$1=\"CHANGEME\"/'"
+
   err "Create symlinks for dr command and config files:"
   err ""
   mkdir -p ~/bin/
   ln -svi "${REPO_BASE}"/dr ~/bin/
   ln -svi "${REPO_BASE}"/gbp.conf ~/.gbp.conf
   ln -svi "${REPO_BASE}"/pbuilderrc ~/.pbuilderrc
-  PACKAGES="git-buildpackage pristine-tar cowbuilder reprepro bsd-mailx sudo fakeroot tmux"
+
+  local PACKAGES="git-buildpackage pristine-tar cowbuilder reprepro bsd-mailx sudo fakeroot tmux"
   err ""
   err "Try to install dependancies using sudo:"
   err "  ${PACKAGES}"
