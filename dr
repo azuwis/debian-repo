@@ -26,7 +26,7 @@ init() {
   ln -svi "${REPO_BASE}"/dr ~/bin/
   ln -svi "${REPO_BASE}"/gbp.conf ~/.gbp.conf
   ln -svi "${REPO_BASE}"/pbuilderrc ~/.pbuilderrc
-  PACKAGES="git-buildpackage cowbuilder reprepro bsd-mailx sudo fakeroot tmux"
+  PACKAGES="git-buildpackage pristine-tar cowbuilder reprepro bsd-mailx sudo fakeroot tmux"
   err ""
   err "Try to install dependancies using sudo:"
   err "  ${PACKAGES}"
