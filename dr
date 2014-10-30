@@ -31,6 +31,19 @@ init() {
   ln -svi "${REPO_BASE}"/gbp.conf ~/.gbp.conf
   ln -svi "${REPO_BASE}"/pbuilderrc ~/.pbuilderrc
 
+  # gpg key
+  local key=$(awk -F': ' '/^Name-Real:/ {print $2}' gpg-gen-key)
+  if ! gpg --list-keys "$key" >& /dev/null; then
+    err ""
+    err "GPG key not found, generate one:"
+    gpg --batch --gen-key gpg-gen-key
+  fi
+  if [ ! -e hooks/gpg-pub.asc ]; then
+    err ""
+    err "Export GPG key to hooks/gpg-pub.asc"
+    gpg --armor --export "$key" > hooks/gpg-pub.asc
+  fi
+
   local PACKAGES="git-buildpackage pristine-tar cowbuilder reprepro bsd-mailx sudo fakeroot tmux"
   err ""
   err "Try to install dependancies using sudo:"
