@@ -44,6 +44,13 @@ init() {
     gpg --armor --export "$key" > hooks/gpg-pub.asc
   fi
 
+  # sudo
+  if ! sudo -l | grep -qF '(root) SETENV: NOPASSWD: /usr/sbin/cowbuilder'; then
+    err ""
+    err "It seems cowbuilder can not be run using sudo, add the following entry to sudoers:"
+    err "  ${USER} ALL = NOPASSWD: SETENV: /usr/sbin/cowbuilder"
+  fi
+
   local PACKAGES="git-buildpackage pristine-tar cowbuilder reprepro bsd-mailx sudo fakeroot tmux"
   err ""
   err "Try to install dependancies using sudo:"
