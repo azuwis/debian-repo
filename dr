@@ -95,6 +95,7 @@ SUBCOMMANDS:
   cb|clean_built               | remove built files
   w|watch list_file            | watch for upstream version
   r|repo <action> [-s]         | reprepro wrapper, -s for staging repo
+  dg|del_gbp                   | delete debian/gbp.conf and do git commit
   log                          | view build log
   jpkg <jdk.bin>               | use make-jpkg to build jdk.deb inside chroot env
   kpkg [-s] <linux-source.deb> [<version-append>] [<revision-append>]
@@ -162,6 +163,9 @@ check_dir() {
   if [ ! -f "debian/changelog" ]; then
     err "Please run inside debian source dir."
     exit 1
+  fi
+  if [ -f "debian/gbp.conf" ]; then
+    err "File debian/gbp.conf exists, use 'dr del_gbp' to remove it."
   fi
 }
 
@@ -401,6 +405,11 @@ repo() {
   done
 }
 
+del_gbp() {
+  git rm debian/gbp.conf
+  git commit -m 'debian/: Delete gbp.conf'
+}
+
 log() {
   check_dir
   local source
@@ -589,6 +598,7 @@ case "$action" in
   w)  action=watch ;;
   k)  action=kill_pane ;;
   r)  action=repo ;;
+  dg) action=del_gbp ;;
 esac
 case "$action" in
   update|create|login)
