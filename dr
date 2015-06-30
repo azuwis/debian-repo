@@ -560,10 +560,15 @@ debmake() {
 }
 
 snapshot() {
+  if [ x"$1" != x ]; then
+    origin="$1"
+  else
+    origin="origin/master"
+  fi
   check_dir
   git fetch
-  git rebase origin/master
-  git update-ref refs/heads/upstream origin/master
+  git rebase upstream --onto "$origin"
+  git update-ref refs/heads/upstream "$origin"
   local version branch
   version=$(git describe --tags upstream)
   version=${version/#upstream\/}
