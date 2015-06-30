@@ -571,7 +571,7 @@ snapshot() {
     revision="$branch"
   fi
   revision="${revision}1"
-  debchange -v "${version}-${revision}" "New upstream snapshot."
+  debchange -b -v "${version}-${revision}" "New upstream snapshot."
   commit_change
   git show
 }
