@@ -1,4 +1,5 @@
 #!/bin/bash
+apt-get install -y gnupg
 apt-key add -- <<EOF
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: GnuPG v1.4.10 (GNU/Linux)
